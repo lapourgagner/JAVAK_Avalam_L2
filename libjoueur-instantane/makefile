@@ -9,8 +9,8 @@ LIB=-L../libavalam
 
 # install: libjoueur-instantane.a libjoueur-instantane.so
 # 	cp  libjoueur-instantane.a libjoueur-instantane.so ../tournoi/lib
-install: libjoueur-instantane.a libjoueur-instantane.so
-	cp  libjoueur-instantane.a libjoueur-instantane.so ../tournoi/lib
+install: libjoueur-instantane.a
+	cp  libjoueur-instantane.a ../tournoi/lib
 
 libjoueur-instantane.a : libjoueur-instantane.c
 	gcc $(INC)  $(DEBUG) -Wno-int-to-pointer-cast -Wno-pointer-to-int-cast -c libjoueur-instantane.c -o libjoueur-instantane.o
