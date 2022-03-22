@@ -19,10 +19,11 @@ exe: $(EXE)
 static: $(STATIC)
 
 install: dep exe
-	cp $(EXE) ../tournoi/bin
+#	cp $(EXE) ../tournoi/bin
 
 %.exe : %.c
 	gcc $(DEBUG) $(LIB) $(INC) $< -o $@ -ljoueur-instantane -lpthread -lavalam
+	cp $@ ../tournoi/bin
 
 %.static : %.c
 	gcc $(DEBUG) -static $(LIB) $(INC) $< -o $@ -ljoueur-instantane -lpthread -lavalam
