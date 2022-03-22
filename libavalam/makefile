@@ -6,11 +6,13 @@ debug: install
 
 INC=-I../include
 
-install: libavalam.so libavalam.a
-	cp libavalam.so libavalam.a ../tournoi/lib
+# install: libavalam.so libavalam.a
+# 	cp libavalam.so libavalam.a ../tournoi/lib
+install: libavalam.a
+	cp libavalam.a ../tournoi/lib
 
-libavalam.so : libavalam.c
-	gcc $(DEBUG) $(INC) -shared -fPIC libavalam.c -o libavalam.so
+# libavalam.so : libavalam.c
+# 	gcc $(DEBUG) $(INC) -shared -fPIC libavalam.c -o libavalam.so
 
 libavalam.a : libavalam.c
 	gcc $(DEBUG) $(INC) -c  libavalam.c -o libavalam.o
