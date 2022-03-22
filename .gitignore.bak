@@ -50,17 +50,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
-# Perso
-*.vsix
-*.json
-*.DStore
-*.js
-**/*.dat
-**/*.txt
-**/*.log
-.vscode/configurationCache.log
-.vscode/dryrun.log
-.vscode/*.json
-.vscode/settings.json
-.vscode/*
