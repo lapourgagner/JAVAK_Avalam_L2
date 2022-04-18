@@ -64,3 +64,6 @@ dkms.conf
 .vscode/*.json
 .vscode/settings.json
 .vscode/*
+
+# Project related
+tournoi/
