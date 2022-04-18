@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "avalam.h"
-#include "moteur.h"
+#include "../include/avalam.h"
+#include "../include/moteur.h"
 
 extern int pidMoteur; 
 
