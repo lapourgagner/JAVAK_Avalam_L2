@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "avalam.h"
-#include "moteur.h"
+#include "../include/avalam.h"
+#include "../include/moteur.h"
 
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups) {

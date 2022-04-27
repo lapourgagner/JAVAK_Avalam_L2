@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "avalam.h"
-#include "moteur.h"
+#include "../include/avalam.h"
+#include "../include/moteur.h"
 
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups) {
@@ -17,18 +17,18 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups) {
 
 	// afficherListeCoups(listeCoups);
 
-	printf("Ma couleur : %s\n", COLNAME(currentPosition.trait));
+	// printf("Ma couleur : %s\n", COLNAME(currentPosition.trait));
 	for(i=0;i<listeCoups.nb; i++) {
 		o = listeCoups.coups[i].origine; 
 		d = listeCoups.coups[i].destination;  
-		printf("Coup %d : ", i); 
-		printf("%d (%d - %s) ->", o, currentPosition.cols[o].nb, COLNAME(currentPosition.cols[o].couleur));
-		printf("%d (%d - %s) \n", d, currentPosition.cols[d].nb, COLNAME(currentPosition.cols[d].couleur)); 
+		// printf("Coup %d : ", i); 
+		// printf("%d (%d - %s) ->", o, currentPosition.cols[o].nb, COLNAME(currentPosition.cols[o].couleur));
+		// printf("%d (%d - %s) \n", d, currentPosition.cols[d].nb, COLNAME(currentPosition.cols[d].couleur)); 
 
 	// Si je peux gagner une colonne, je la prends 
 	if ( (currentPosition.cols[o].couleur == myColor)
 		&& (currentPosition.cols[d].nb == 4) ) {
-			printf("On choisit ce coup ! \n"); 
+			// printf("On choisit ce coup ! \n"); 
 			ecrireIndexCoup(i);
 			return; // on quitte la fonction 
 		}
