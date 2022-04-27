@@ -1,1 +1,1 @@
-Fonction recherche NumCoup(T_listeCoups listeCoups(), int origine, int destination)
+Fonction recherche NumCoup(T_listeCoups listeCoups(), int origine, int destination) (QSORT)
