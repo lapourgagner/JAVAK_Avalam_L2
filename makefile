@@ -22,7 +22,7 @@ clean:
 	rm -rf ./tournoi/run/*
 	rm -rf ./tournoi/web/data/*
 	rm -rf /dev/shm/*.avalam
-	cd ./libavalam; make clean
+	cd ./libavalam; make clean*
 	cd ./libjoueur; make clean
 	cd ./libjoueur-instantane; make clean
 	cd ./moteur; make clean

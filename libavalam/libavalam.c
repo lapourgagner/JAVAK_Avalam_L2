@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "avalam.h"
+#include "../include/avalam.h"
 
 extern T_Voisins topologie[NBCASES]; 
 extern T_Position positionInitiale; // ajout extern 20/03/2022
