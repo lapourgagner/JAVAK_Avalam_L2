@@ -1,0 +1,1 @@
+Fonction recherche NumCoup(T_listeCoups listeCoups(), int origine, int destination)
