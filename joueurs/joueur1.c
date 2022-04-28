@@ -35,7 +35,8 @@ int rechercheCoup(T_ListeCoups listeCoups, int origine, int destination)
 int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 // TODO: Adapater technique de la mante religieuse, pas adaptée avec l'ordre de placement des bonus
 {
-	int coup;
+	int coup ;
+	octet tempo;
 	switch(currentPosition.numCoup) {
 		case 4: // Malus rouge
 			//
@@ -51,13 +52,10 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 
 		case 2: // Bonus rouge
 			//
-
-			octet tab[] = {19,28};
-			octet tempo;
 			octet bonusJaune = currentPosition.evolution.bonusJ ;
 			for(int i=0 ;i<2 ;i++)
 			{
-				if(tab[i] == bonusJaune)
+				if(19 == bonusJaune || 28 == bonusJaune)
 					tempo = bonusJaune;
 			}
 			if( tempo == 28 )
@@ -139,7 +137,7 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if (zonesafe(currentPosition) == -1 )
 			return -1;
 
-		if(currentPosition.evolution.bonusJ = 28)
+		if(currentPosition.evolution.bonusJ == 28)
 		{
 			switch(currentPosition.numCoup) 
 			{
@@ -190,7 +188,7 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if (zonesafe(currentPosition) == -1 )
 			return -1;
 								
-		if(currentPosition.evolution.bonusR = 22)
+		if(currentPosition.evolution.bonusR == 22)
 		{
 			switch(currentPosition.numCoup) 
 			{
