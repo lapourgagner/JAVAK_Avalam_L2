@@ -52,19 +52,10 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 
 		case 2: // Bonus rouge
 			//
-<<<<<<< HEAD
 			octet bonusJaune = currentPosition.evolution.bonusJ ;
 			for(int i=0 ;i<2 ;i++)
 			{
 				if(19 == bonusJaune || 28 == bonusJaune)
-=======
-
-			octet tab[] = {19, 28};
-			octet tempo;
-			octet bonusJaune = currentPosition.evolution.bonusJ;
-			for(int i = 0; i < 2; i++) {
-				if(tab[i] == bonusJaune)
->>>>>>> 987d480220c06399cc3d0234c4364a86bd459a2a
 					tempo = bonusJaune;
 			}
 			if(tempo == 28) {
@@ -133,15 +124,10 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if(zonesafe(currentPosition) == -1)
 			return -1;
 
-<<<<<<< HEAD
 		if(currentPosition.evolution.bonusJ == 28)
 		{
 			switch(currentPosition.numCoup) 
 			{
-=======
-		if(currentPosition.evolution.bonusJ = 28) {
-			switch(currentPosition.numCoup) {
->>>>>>> 987d480220c06399cc3d0234c4364a86bd459a2a
 				case 5:
 					return rechercheCoup(listeCoupsSoi, 21, 29);
 					break;
@@ -180,17 +166,11 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 
 		if(zonesafe(currentPosition) == -1)
 			return -1;
-<<<<<<< HEAD
 								
 		if(currentPosition.evolution.bonusR == 22)
 		{
 			switch(currentPosition.numCoup) 
 			{
-=======
-
-		if(currentPosition.evolution.bonusR = 22) {
-			switch(currentPosition.numCoup) {
->>>>>>> 987d480220c06399cc3d0234c4364a86bd459a2a
 				case 6:
 					if(estValide(currentPosition, 22, 29) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 22, 29);
