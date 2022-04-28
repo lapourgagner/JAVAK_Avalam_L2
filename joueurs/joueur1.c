@@ -20,7 +20,7 @@ void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
 }
 
 // Recher l'index d'un coup avec un case origine et une case destiantion donnée
-int rechercheCoup(T_ListeCoups listeCoups, int origine, int destination)
+int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 {
 	int moy = 0;int debut = 0;int size = 8*NBCASES;
     while (debut <= size)
