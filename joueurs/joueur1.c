@@ -52,64 +52,61 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 
 		case 2: // Bonus rouge
 			//
+<<<<<<< HEAD
 			octet bonusJaune = currentPosition.evolution.bonusJ ;
 			for(int i=0 ;i<2 ;i++)
 			{
 				if(19 == bonusJaune || 28 == bonusJaune)
+=======
+
+			octet tab[] = {19, 28};
+			octet tempo;
+			octet bonusJaune = currentPosition.evolution.bonusJ;
+			for(int i = 0; i < 2; i++) {
+				if(tab[i] == bonusJaune)
+>>>>>>> 987d480220c06399cc3d0234c4364a86bd459a2a
 					tempo = bonusJaune;
 			}
-			if( tempo == 28 )
-			{
+			if(tempo == 28) {
 				currentPosition.evolution.bonusR = 22;
-				coup = 22;
+				coup							 = 22;
 			}
-			else if( tempo == 19)
-			{
+			else if(tempo == 19) {
 				currentPosition.evolution.bonusR = 25;
-				coup = 25;
+				coup							 = 25;
 			}
-			else
-			{
+			else {
 				currentPosition.evolution.bonusR = 1;
-				coup = 1;
+				coup							 = 1;
 			}
 			return coup;
 			break;
-
-
 
 		case 1: // Bonus jaune
 			//
 
-			if (currentPosition.trait == JAU)
-			{
+			if(currentPosition.trait == JAU) {
 				// Technique du cobra ancestral
 
-				octet tab[] = {11,17,18,19,25,26};
+				octet tab[] = {11, 17, 18, 19, 25, 26};
 				octet tempo;
-				octet malusRouge = currentPosition.evolution.malusR ;
-				for(int i=0 ;i<8 ;i++)
-				{
+				octet malusRouge = currentPosition.evolution.malusR;
+				for(int i = 0; i < 8; i++) {
 					if(tab[i] == malusRouge)
 						tempo = malusRouge;
 				}
-				if(currentPosition.evolution.malusR == tempo)
-				{
+				if(currentPosition.evolution.malusR == tempo) {
 					currentPosition.evolution.bonusJ = 19;
-					coup = 19;
+					coup							 = 19;
 				}
-				else
-				{
+				else {
 					currentPosition.evolution.bonusJ = 28;
-					coup = 28;
+					coup							 = 28;
 				}
 			}
 
-
 			return coup;
 			break;
-
-
 
 		default:
 
@@ -130,121 +127,121 @@ int zonesafe(T_Position currentPosition)
 
 int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 {
-	if (currentPosition.trait == JAU)
-	{
+	if(currentPosition.trait == JAU) {
 		// Technique du cobra ancestral
 
-		if (zonesafe(currentPosition) == -1 )
+		if(zonesafe(currentPosition) == -1)
 			return -1;
 
+<<<<<<< HEAD
 		if(currentPosition.evolution.bonusJ == 28)
 		{
 			switch(currentPosition.numCoup) 
 			{
+=======
+		if(currentPosition.evolution.bonusJ = 28) {
+			switch(currentPosition.numCoup) {
+>>>>>>> 987d480220c06399cc3d0234c4364a86bd459a2a
 				case 5:
-					return rechercheCoup(listeCoupsSoi,21,29);
+					return rechercheCoup(listeCoupsSoi, 21, 29);
 					break;
 
-				case 7: 
-					if(estValide(currentPosition,29,20) == VRAI)
-						return rechercheCoup(listeCoupsSoi,29,20);
-					break;
-				
-				case 9:
-					if(estValide(currentPosition,20,28) == VRAI)
-						return rechercheCoup(listeCoupsSoi,20,28);
-			}
-				
-		}
-		
-		else
-		{
-			
-			switch(currentPosition.numCoup) 
-			{
-				case 5:
-					return rechercheCoup(listeCoupsSoi,26,18);
+				case 7:
+					if(estValide(currentPosition, 29, 20) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 29, 20);
 					break;
 
-				case 7: 
-					if(estValide(currentPosition,18,27) == VRAI)
-						return rechercheCoup(listeCoupsSoi,18,27);
-					break;
-				
 				case 9:
-					if(estValide(currentPosition,27,19) == VRAI)
-						return rechercheCoup(listeCoupsSoi,27,19);
-					break;
+					if(estValide(currentPosition, 20, 28) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 20, 28);
 			}
-				
 		}
 
+		else {
+			switch(currentPosition.numCoup) {
+				case 5:
+					return rechercheCoup(listeCoupsSoi, 26, 18);
+					break;
 
+				case 7:
+					if(estValide(currentPosition, 18, 27) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 18, 27);
+					break;
+
+				case 9:
+					if(estValide(currentPosition, 27, 19) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 27, 19);
+					break;
+			}
+		}
 	}
-	else if (currentPosition.trait ==  ROU)
-	{
+	else if(currentPosition.trait == ROU) {
 		// Technique de la mante religieuse
 
-		if (zonesafe(currentPosition) == -1 )
+		if(zonesafe(currentPosition) == -1)
 			return -1;
+<<<<<<< HEAD
 								
 		if(currentPosition.evolution.bonusR == 22)
 		{
 			switch(currentPosition.numCoup) 
 			{
+=======
+
+		if(currentPosition.evolution.bonusR = 22) {
+			switch(currentPosition.numCoup) {
+>>>>>>> 987d480220c06399cc3d0234c4364a86bd459a2a
 				case 6:
-					if(estValide(currentPosition,22,29) == VRAI)
-						return rechercheCoup(listeCoupsSoi,22,29);
+					if(estValide(currentPosition, 22, 29) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 22, 29);
 					break;
 
-				case 8: 
-					if(currentPosition.cols[21].nb == 1 && currentPosition.cols[20].couleur == ROU && estValide(currentPosition,29,28) == VRAI)
-						return rechercheCoup(listeCoupsSoi,29,28);
-					else if(estValide(currentPosition,29,20) == VRAI)
-						return rechercheCoup(listeCoupsSoi,29,20);
+				case 8:
+					if(currentPosition.cols[21].nb == 1 && currentPosition.cols[20].couleur == ROU &&
+					   estValide(currentPosition, 29, 28) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 29, 28);
+					else if(estValide(currentPosition, 29, 20) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 29, 20);
 					break;
-				
+
 				case 10:
-					if(estValide(currentPosition,20,28) == VRAI)
-						return rechercheCoup(listeCoupsSoi,20,28);
+					if(estValide(currentPosition, 20, 28) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 20, 28);
 			}
-				
 		}
-		else
-		{
-			switch(currentPosition.numCoup) 
-			{
+		else {
+			switch(currentPosition.numCoup) {
 				case 6:
-					if(estValide(currentPosition,25,18) == VRAI)
-						return rechercheCoup(listeCoupsSoi,25,18);
+					if(estValide(currentPosition, 25, 18) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 25, 18);
 					break;
 
-				case 8: 
-					if(currentPosition.cols[26].nb == 1 && currentPosition.cols[27].couleur == ROU && estValide(currentPosition,18,19) == VRAI)
-						return rechercheCoup(listeCoupsSoi,18,19);
-					else if(estValide(currentPosition,29,20) == VRAI)
-						return rechercheCoup(listeCoupsSoi,29,20);
+				case 8:
+					if(currentPosition.cols[26].nb == 1 && currentPosition.cols[27].couleur == ROU &&
+					   estValide(currentPosition, 18, 19) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 18, 19);
+					else if(estValide(currentPosition, 29, 20) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 29, 20);
 					break;
-				
+
 				case 10:
-					if(currentPosition.cols[19].nb == 3 && currentPosition.cols[19].couleur == ROU && estValide(currentPosition,26,35) == VRAI)
-						return rechercheCoup(listeCoupsSoi,26,35);
-					else if(estValide(currentPosition,20,28) == VRAI)
-						return rechercheCoup(listeCoupsSoi,20,28);
+					if(currentPosition.cols[19].nb == 3 && currentPosition.cols[19].couleur == ROU &&
+					   estValide(currentPosition, 26, 35) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 26, 35);
+					else if(estValide(currentPosition, 20, 28) == VRAI)
+						return rechercheCoup(listeCoupsSoi, 20, 28);
 			}
-				
-		}		
+		}
 	}
 	return -1;
 }
 
-float evaluerPlateau(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
+float evaluerScorePlateau(T_Position currentPosition)
 {
 	float evaluation;
 
 	// Liste des paramètres
-	int nb_coups_soi = 0;
-	int nb_coups_adv, nb_pions_soi, nb_pion_adv, score_soi, score_adv, score5_soi, score5_adv;
+	int  nb_pions_soi, nb_pion_adv, score_soi, score_adv, score5_soi, score5_adv;
 
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
@@ -261,39 +258,20 @@ float evaluerPlateau(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		score5_adv = score.nbJ5;
 	}
 
-	// On inverse le trait pour lister les coups adverses
-	if(JAU == currentPosition.trait)
-		currentPosition.trait = ROU;
-	else
-		currentPosition.trait = JAU;
-
-	// On liste les coups adverses
-	T_ListeCoups listeCoupsAdversaire = getCoupsLegaux(currentPosition);
-	// TODO: Parcourir tous les coups possibles et le compter
-
-	// On replace le trait correctement
-	if(JAU == currentPosition.trait)
-		currentPosition.trait = ROU;
-	else
-		currentPosition.trait = JAU;
-
-	// TODO: Stopped here
-	// On compte les coups:
-	while(0 == listeCoupsSoi.coups[nb_coups_soi].origine && 0 == listeCoupsSoi.coups[nb_coups_soi].destination) {
-		nb_coups_soi++;
-	}
-
-	// TODO: mutiplier toutes lezs valeurs que l'on a obtenu par des coeffecicient à defeinir pour avoir un score final du plateau, à comparer aux auutres mo ments 
-	// score = ;
+	// TODO: mutiplier toutes lezs valeurs que l'on a obtenu par des coeffecicient à defeinir pour avoir un score final du
+	// plateau, à comparer aux auutres mo ments score = ;
 
 	printf1("Evaluation: %f\n", evaluation);
 	return evaluation;
 }
 
+float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination) {
+	//
+}
+
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 {
-	int result;	
-
+	int result;
 
 	// Pour le debug: Affiche tous les coups possibles, et même plus, ceux qui n'exitent pas !
 	for(int i = 0; i < NBCASES * 8; i++) {
@@ -310,12 +288,10 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 
 		ecrireIndexCoup(result);
 	}
-	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <=10) 
-	{
-		result = ouverture(currentPosition,listeCoups);
+	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10) {
+		result = ouverture(currentPosition, listeCoups);
 
-		if(result == -1)
-		{
+		if(result == -1) {
 			// USE MINI MAX
 		}
 		ecrireIndexCoup(result);
