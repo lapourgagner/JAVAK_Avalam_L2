@@ -2,4 +2,4 @@ Fonction recherche NumCoup(T_listeCoups listeCoups(), int origine, int destinati
 
 Fonction evaluerScorePlateau(T_plateau) => float score
 
-Fonction evaluerScoreCoups(T_listeCoups, T_plateau, int NumCoups) => float score
+Fonction evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination) => float

@@ -213,13 +213,12 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 	return -1;
 }
 
-float evaluerPlateau(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
+float evaluerScorePlateau(T_Position currentPosition)
 {
 	float evaluation;
 
 	// Liste des paramètres
-	int nb_coups_soi = 0;
-	int nb_coups_adv, nb_pions_soi, nb_pion_adv, score_soi, score_adv, score5_soi, score5_adv;
+	int  nb_pions_soi, nb_pion_adv, score_soi, score_adv, score5_soi, score5_adv;
 
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
@@ -236,33 +235,15 @@ float evaluerPlateau(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		score5_adv = score.nbJ5;
 	}
 
-	// On inverse le trait pour lister les coups adverses
-	if(JAU == currentPosition.trait)
-		currentPosition.trait = ROU;
-	else
-		currentPosition.trait = JAU;
-
-	// On liste les coups adverses
-	T_ListeCoups listeCoupsAdversaire = getCoupsLegaux(currentPosition);
-	// TODO: Parcourir tous les coups possibles et le compter
-
-	// On replace le trait correctement
-	if(JAU == currentPosition.trait)
-		currentPosition.trait = ROU;
-	else
-		currentPosition.trait = JAU;
-
-	// TODO: Stopped here
-	// On compte les coups:
-	while(0 == listeCoupsSoi.coups[nb_coups_soi].origine && 0 == listeCoupsSoi.coups[nb_coups_soi].destination) {
-		nb_coups_soi++;
-	}
-
 	// TODO: mutiplier toutes lezs valeurs que l'on a obtenu par des coeffecicient à defeinir pour avoir un score final du
 	// plateau, à comparer aux auutres mo ments score = ;
 
 	printf1("Evaluation: %f\n", evaluation);
 	return evaluation;
+}
+
+float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination) {
+	//
 }
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
