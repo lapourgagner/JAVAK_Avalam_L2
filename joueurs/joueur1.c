@@ -22,14 +22,26 @@ void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
 // Recher l'index d'un coup avec un case origine et une case destiantion donnée
 int rechercheCoup(T_ListeCoups listeCoups, int origine, int destination)
 {
-	int result_1;
-
-	// result = bsearch();
-
-	if(NULL == result_1) {
-		return -1;
-	}
-	return result_1;
+	int moy = 0;int debut = 0;int size = 8*NBCASES;
+    while (debut <= size)
+    {   moy = (debut + size)/2;
+		if (listeCoups.coups[moy].origine==0 && moy!= 0)
+        {   size= moy-1;    }   
+        else if (listeCoups.coups[moy].origine == origine)
+        {   if (listeCoups.coups[moy].destination > destination)
+            {   while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination > destination)
+                    moy--;  }
+            else if (listeCoups.coups[moy].destination < destination)
+            {   while (listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination < destination)
+                    moy++;  }
+            if (listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination == destination)
+            {   return moy; }
+            return -1;  } 
+        else if (listeCoups.coups[moy].origine < origine)
+        {   debut = moy+1;  }
+        else
+        {   size = moy-1;   }
+    }return -1;
 }
 
 int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
