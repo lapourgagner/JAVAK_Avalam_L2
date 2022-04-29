@@ -275,14 +275,20 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	}
 
 	// Gestion des bonus/malus:
-	if(5 > currentPosition.numCoup) // (bj, br, mj, mr)
+	if(11 > currentPosition.numCoup) // (bj, br, mj, mr)
 	{
-		result = placerBonus(currentPosition, listeCoups);
+		// result = placerBonus(currentPosition, listeCoups);
 
-		if(result != -1)
-			printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
+		// if(result != -1)
+		// 	printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
 
-		ecrireIndexCoup(result);
+		// ecrireIndexCoup(result);
+		int coupOuverture = ouverture(currentPosition, listeCoups);
+		if (coupOuverture != -1){
+			ecrireIndexCoup(ouverture);
+
+		}
+		
 	}
 	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10) {
 		result = ouverture(currentPosition, listeCoups);
@@ -291,6 +297,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 			// USE MINI MAX
 		}
 		ecrireIndexCoup(result);
+		return;
 	}
 
 	printf("Etat des bonus/malus: bj: %d, mj: %d, br: %d, mr:%d. Trait: %d\n", currentPosition.evolution.bonusJ,
