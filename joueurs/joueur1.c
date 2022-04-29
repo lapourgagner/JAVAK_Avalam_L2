@@ -288,7 +288,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 		result = ouverture(currentPosition, listeCoups);
 
 		if(result == -1) {
-			// USE MINI MAX
+			ecrireIndexCoup(0);
 		}
 		ecrireIndexCoup(result);
 	}
