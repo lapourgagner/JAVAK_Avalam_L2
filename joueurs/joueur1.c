@@ -288,7 +288,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 		// ecrireIndexCoup(result);
 		int coupOuverture = ouverture(currentPosition, listeCoups);
 		if (coupOuverture != -1){
-			ecrireIndexCoup(ouverture);
+			ecrireIndexCoup(coupOuverture);
 
 		}
 		
