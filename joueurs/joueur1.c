@@ -62,7 +62,7 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 			return coup;
 			break;
 
-		case 2: // Bonus rouge
+		case 2:; // Bonus rouge
 			//
 			octet bonusJaune = currentPosition.evolution.bonusJ ;
 			for(int i=0 ;i<2 ;i++)
@@ -233,7 +233,11 @@ float evaluerScorePlateau(T_Position currentPosition)
 	float evaluation;
 
 	// Liste des paramètres
-	int  nb_pions_soi, nb_pion_adv, score_soi, score_adv, score5_soi, score5_adv;
+	int score_soi, score_adv, score5_soi, score5_adv;
+	int score_soi_coeff = 1;
+	int score_adv_coeff = 1;
+	int score5_soi_coeff = 1;
+	int score5_adv_coeff = 1;
 
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
