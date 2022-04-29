@@ -89,23 +89,26 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 			//
 
 			if(currentPosition.trait == JAU) {
+				
 				// Technique du cobra ancestral
 
-				octet tab[] = {11, 17, 18, 19, 25, 26};
-				octet tempo;
-				octet malusRouge = currentPosition.evolution.malusR;
-				for(int i = 0; i < 8; i++) {
-					if(tab[i] == malusRouge)
-						tempo = malusRouge;
-				}
-				if(currentPosition.evolution.malusR == tempo) {
-					currentPosition.evolution.bonusJ = 19;
-					coup							 = 19;
-				}
-				else {
-					currentPosition.evolution.bonusJ = 28;
-					coup							 = 28;
-				}
+				// octet tab[] = {11, 17, 18, 19, 25, 26};
+				// octet tempo;
+				// octet malusRouge = currentPosition.evolution.malusR;
+				// for(int i = 0; i < 8; i++) {
+				// 	if(tab[i] == malusRouge)
+				// 		tempo = malusRouge;
+				// }
+				// if(currentPosition.evolution.malusR == tempo) {
+				// 	currentPosition.evolution.bonusJ = 19;
+				// 	coup							 = 19;
+				// }
+				// else {
+				// 	currentPosition.evolution.bonusJ = 28;
+				// 	coup							 = 28;
+				// }
+				currentPosition.evolution.bonusJ = 19;
+				coup							 = 19;
 			}
 
 			return coup;
