@@ -271,6 +271,101 @@ float evaluerScorePlateau(T_Position currentPosition)
 float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination)
 {
 	float evaluation = 0;
+		octet o, d;
+	int i;
+	o = listeCoups.coups[i].origine;
+    	d = listeCoups.coups[i].destination;
+	octet myColor = currentPosition.trait;
+	T_Voisins voisinOrigine;
+	T_Voisins voisinDestination;
+    	voisinOrigine = getVoisins(o);
+	voisinDestination = getVoisins(d);
+	//position de depart de ma couleur -> position d'arrivée couleur adverse et somme des deux tours = 5
+	if ((currentPosition.cols[o].couleur == myColor) && (currentPosition.cols[o].nb+currentPosition.cols[d].nb==5) && (currentPosition.cols[d].couleur != myColor))
+	    {
+		evaluation = 100;
+	    }
+
+	//position de depart de ma couleur -> position d'arrivée de ma couleur et somme des deux tours = 5
+	if ((currentPosition.cols[o].couleur == myColor) && (currentPosition.cols[o].nb+currentPosition.cols[d].nb == 5) && (currentPosition.cols[d].couleur == myColor))
+	    {
+		evaluation = 90;
+	    }
+
+	////position de depart couleur adverse -> position d'arrivée de couleur adverse et somme des deux tours = 5
+	if ((currentPosition.cols[o].couleur != myColor) && (currentPosition.cols[o].nb+currentPosition.cols[d].nb==5) && (currentPosition.cols[d].couleur != myColor))
+	    {
+		evaluation = -100;
+	    }
+	
+	//Isoler 1 voisin	80
+	/*if ((currentPosition.cols[o].couleur == myColor) && (voisin.nb==1))
+	    {
+		evaluation = 80;
+	    }*/
+
+	//contre isoler 1 voisin	75
+	if((currentPosition.cols[o].couleur != myColor) && (voisinOrigine.nb==1))
+	    {
+		evaluation=75;
+	    } 
+	
+	//contre isoler 1 voisin	65
+	if((currentPosition.cols[o].couleur != myColor) && (voisinOrigine.nb==2))
+	    {
+		evaluation=65;
+	    } 
+
+	//contre isoler 1 voisin	55
+	if((currentPosition.cols[o].couleur != myColor) && (voisinOrigine.nb==3))
+	    {
+		evaluation=55;
+	    } 
+
+	for (int j=0; j<listeCoups.nb; j++) 
+	{ 
+		octet o2,d2;
+		o2 = listeCoups.coups[j].origine; // Cette deuxième origine correspond à la destination du tour actuel
+		d2 = listeCoups.coups[j].destination; // Cette deuxième destination correspond à la portée de la destination du tour actuel
+		if ((currentPosition.cols[o].couleur == myColor))
+		{
+			if((currentPosition.cols[d].couleur == myColor))
+			{
+				if(currentPosition.cols[o].nb + currentPosition.cols[d].nb + currentPosition.cols[d2].nb!=5)
+				{
+					evaluation=40;
+				}
+				
+
+			}
+
+			if((currentPosition.cols[d].couleur != myColor))
+				{
+					if(currentPosition.cols[o].nb + currentPosition.cols[d].nb + currentPosition.cols[d2].nb!=5)
+					{
+						evaluation=58;
+					}
+
+				}
+
+		}
+		if ((currentPosition.cols[o].couleur != myColor))
+		{
+			if((currentPosition.cols[d].couleur == myColor))
+			{
+				evaluation=-100;
+			}
+
+			if((currentPosition.cols[d].couleur != myColor))
+			{
+				if(currentPosition.cols[o].nb + currentPosition.cols[d].nb + currentPosition.cols[d2].nb!=5)
+				{
+					evaluation=68;
+				}
+
+			}
+		}
+	}
 	/*
 	Tour adverse sur soi	-100
 	isoler pion adverse	-100
