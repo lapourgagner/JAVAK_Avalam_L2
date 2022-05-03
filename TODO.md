@@ -3,3 +3,6 @@ Fonction rechercheCoup(T_listeCoups listeCoups(), int origine, int destination) 
 Fonction evaluerScorePlateau(T_plateau) => float score
 
 Fonction evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination) => float
+
+faire les bonus 
+faire fonction evaluerscore
