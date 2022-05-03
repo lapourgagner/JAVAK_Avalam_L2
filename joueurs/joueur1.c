@@ -22,32 +22,42 @@ void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
 // Recher l'index d'un coup avec un case origine et une case destiantion donnée
 int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 {
-	int moy = 0;int debut = 0;int size = 8*NBCASES;
-    while (debut <= size)
-    {   moy = (debut + size)/2;
-		if (listeCoups.coups[moy].origine==0 && moy!= 0)
-        {   size= moy-1;    }   
-        else if (listeCoups.coups[moy].origine == origine)
-        {   if (listeCoups.coups[moy].destination > destination)
-            {   while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination > destination)
-                    moy--;  }
-            else if (listeCoups.coups[moy].destination < destination)
-            {   while (listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination < destination)
-                    moy++;  }
-            if (listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination == destination)
-            {   return moy; }
-            return -1;  } 
-        else if (listeCoups.coups[moy].origine < origine)
-        {   debut = moy+1;  }
-        else
-        {   size = moy-1;   }
-    }return -1;
+	int moy	  = 0;
+	int debut = 0;
+	int size  = 8 * NBCASES;
+	while(debut <= size) {
+		moy = (debut + size) / 2;
+		if(listeCoups.coups[moy].origine == 0 && moy != 0) {
+			size = moy - 1;
+		}
+		else if(listeCoups.coups[moy].origine == origine) {
+			if(listeCoups.coups[moy].destination > destination) {
+				while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination > destination)
+					moy--;
+			}
+			else if(listeCoups.coups[moy].destination < destination) {
+				while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination < destination)
+					moy++;
+			}
+			if(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination == destination) {
+				return moy;
+			}
+			return -1;
+		}
+		else if(listeCoups.coups[moy].origine < origine) {
+			debut = moy + 1;
+		}
+		else {
+			size = moy - 1;
+		}
+	}
+	return -1;
 }
 
 int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 // TODO: Adapater technique de la mante religieuse, pas adaptée avec l'ordre de placement des bonus
 {
-	int coup ;
+	int	  coup;
 	octet tempo;
 	switch(currentPosition.numCoup) {
 		case 4: // Malus rouge
@@ -64,9 +74,8 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 
 		case 2:; // Bonus rouge
 			//
-			octet bonusJaune = currentPosition.evolution.bonusJ ;
-			for(int i=0 ;i<2 ;i++)
-			{
+			octet bonusJaune = currentPosition.evolution.bonusJ;
+			for(int i = 0; i < 2; i++) {
 				if(19 == bonusJaune || 28 == bonusJaune)
 					tempo = bonusJaune;
 			}
@@ -89,7 +98,6 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 			//
 
 			if(currentPosition.trait == JAU) {
-				
 				// Technique du cobra ancestral
 
 				// octet tab[] = {11, 17, 18, 19, 25, 26};
@@ -139,10 +147,8 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if(zonesafe(currentPosition) == -1)
 			return -1;
 
-		if(currentPosition.evolution.bonusJ == 28)
-		{
-			switch(currentPosition.numCoup) 
-			{
+		if(currentPosition.evolution.bonusJ == 28) {
+			switch(currentPosition.numCoup) { // ??
 				case 5:
 					return rechercheCoup(listeCoupsSoi, 21, 29);
 					break;
@@ -181,11 +187,9 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 
 		if(zonesafe(currentPosition) == -1)
 			return -1;
-								
-		if(currentPosition.evolution.bonusR == 22)
-		{
-			switch(currentPosition.numCoup) 
-			{
+
+		if(currentPosition.evolution.bonusR == 22) {
+			switch(currentPosition.numCoup) {
 				case 6:
 					if(estValide(currentPosition, 22, 29) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 22, 29);
@@ -233,12 +237,12 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 
 float evaluerScorePlateau(T_Position currentPosition)
 {
-	float evaluation;
+	float evaluation = 0;
 
 	// Liste des paramètres
 	int score_soi, score_adv, score5_soi, score5_adv;
-	int score_soi_coeff = 1;
-	int score_adv_coeff = 1;
+	int score_soi_coeff	 = 1;
+	int score_adv_coeff	 = 1;
 	int score5_soi_coeff = 1;
 	int score5_adv_coeff = 1;
 
@@ -316,17 +320,50 @@ float evaluerScorePlateau(T_Position currentPosition)
 	return evaluation;
 }
 
-float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination) {
-	//
+float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination)
+{
+	float evaluation = 0;
+	/*
+	Tour adverse sur soi	-100
+	isoler pion adverse	-100
+	Tour 5 adverse	-100
+	Tour de 3 si tour de 2 à côté de destination	-90
+	Tour de 4 si tour de 1 à côté de destination	-90
+	Isoler 4 voisins	50
+	contre isoler 3 voisins	55
+	soi sur adverse	58
+	Isoler 3 voisins	60
+	contre isoler 2 voisins	65
+	averse dur adverse	68
+	Isoler 2 voisins	70
+	contre isoler 1 voisin	75
+	Isoler 1 voisin	80
+	Tour de 5 sur son propre pion	90
+	Tour 5 sur pion adverse	100
+	*/
+
+	T_Voisins voisins = getVoisins(destination);
+	for (int i = 0; i < voisins.nb; i++)
+	{
+		if (voisins.case[i] == 0 || voisins.case[i] == origine) // Si le voiin est une case vide ou que c'est notre place de départ, on ignore
+		{
+			break;
+		}
+		
+		
+	}
+	
+	return evaluation;
 }
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 {
+	printf("\033[0;31m");
 	int result;
 
 	// Pour le debug: Affiche tous les coups possibles, et même plus, ceux qui n'exitent pas !
-	for(int i = 0; i < NBCASES * 8; i++) {
-		printf("orig: %d, dest: %d, num: %d\n", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
+	for(int i = 0; i < listeCoups.nb; i++) {
+		printf("o:%d d: %d n:%d | ", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
 	}
 
 	// Gestion des bonus/malus:
@@ -339,11 +376,11 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 
 		ecrireIndexCoup(result);
 		int coupOuverture = ouverture(currentPosition, listeCoups);
-		if (coupOuverture != -1){
+		if(coupOuverture != -1) {
+			printf("On écrit le coup %d (o:%d, d:%d)\n", coupOuverture, listeCoups.coups[coupOuverture].origine,
+				   listeCoups.coups[coupOuverture].destination);
 			ecrireIndexCoup(coupOuverture);
-
 		}
-		
 	}
 	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10) {
 		result = ouverture(currentPosition, listeCoups);
@@ -359,5 +396,5 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 		   currentPosition.evolution.malusJ, currentPosition.evolution.bonusR, currentPosition.evolution.malusR,
 		   currentPosition.trait);
 
-	ecrireIndexCoup(0);
+	printf("\033[0m");
 }
