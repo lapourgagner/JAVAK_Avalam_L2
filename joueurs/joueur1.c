@@ -148,7 +148,7 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 			return -1;
 
 		if(currentPosition.evolution.bonusJ == 28) {
-			switch(currentPosition.numCoup) {
+			switch(currentPosition.numCoup) { // ??
 				case 5:
 					return rechercheCoup(listeCoupsSoi, 21, 29);
 					break;
@@ -237,7 +237,7 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 
 float evaluerScorePlateau(T_Position currentPosition)
 {
-	float evaluation;
+	float evaluation = 0;
 
 	// Liste des paramètres
 	int score_soi, score_adv, score5_soi, score5_adv;
@@ -270,7 +270,38 @@ float evaluerScorePlateau(T_Position currentPosition)
 
 float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination)
 {
-	//
+	float evaluation = 0;
+	/*
+	Tour adverse sur soi	-100
+	isoler pion adverse	-100
+	Tour 5 adverse	-100
+	Tour de 3 si tour de 2 à côté de destination	-90
+	Tour de 4 si tour de 1 à côté de destination	-90
+	Isoler 4 voisins	50
+	contre isoler 3 voisins	55
+	soi sur adverse	58
+	Isoler 3 voisins	60
+	contre isoler 2 voisins	65
+	averse dur adverse	68
+	Isoler 2 voisins	70
+	contre isoler 1 voisin	75
+	Isoler 1 voisin	80
+	Tour de 5 sur son propre pion	90
+	Tour 5 sur pion adverse	100
+	*/
+
+	T_Voisins voisins = getVoisins(destination);
+	for (int i = 0; i < voisins.nb; i++)
+	{
+		if (voisins.case[i] == 0 || voisins.case[i] == origine) // Si le voiin est une case vide ou que c'est notre place de départ, on ignore
+		{
+			break;
+		}
+		
+		
+	}
+	
+	return evaluation;
 }
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
