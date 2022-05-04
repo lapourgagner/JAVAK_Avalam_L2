@@ -62,13 +62,13 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 	switch(currentPosition.numCoup) {
 		case 4: // Malus rouge
 			//
-			coup = rechercheCoup(listeCoups,2,2);
+			coup = rechercheCoup(listeCoups, 2, 2);
 			return coup;
 			break;
 
 		case 3: // Malus jaune
 			//
-			coup = rechercheCoup(listeCoups,1,1);
+			coup = rechercheCoup(listeCoups, 1, 1);
 			return coup;
 			break;
 
@@ -80,14 +80,13 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 					tempo = bonusJaune;
 			}
 			if(tempo == 28) {
-				coup							 = 22;
+				coup = 22;
 			}
 			else if(tempo == 19) {
-				coup							 = rechercheCoup(listeCoups,25,25);
-				
+				coup = rechercheCoup(listeCoups, 25, 25);
 			}
 			else {
-				coup							 = rechercheCoup(listeCoups,1,1);
+				coup = rechercheCoup(listeCoups, 1, 1);
 			}
 			return coup;
 			break;
@@ -98,7 +97,7 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 			if(currentPosition.trait == JAU) {
 				// Technique du cobra ancestral
 
-				coup							 = rechercheCoup(listeCoups,19,19);
+				coup = rechercheCoup(listeCoups, 19, 19);
 			}
 
 			return coup;
@@ -228,8 +227,8 @@ float evaluerScorePlateau(T_Position currentPosition)
 	int score5_soi_coeff = 1;
 	int score5_adv_coeff = 1;
 
-	int score_total = 0 ,score_isole;
-	octet myColor = currentPosition.trait;
+	int	  score_total = 0, score_isole;
+	octet myColor	  = currentPosition.trait;
 
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
@@ -262,17 +261,77 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 	voisinOrigine	  = getVoisins(origine);
 	voisinDestination = getVoisins(destination);
 
-	// Tour adverse sur soi	-100
-	if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur == traitPerso) {
-		evaluation = evaluation - 100;
+	// Si la tour que l'on déplace est de la couleur adverse
+	if(currentPosition.cols[origine].couleur != traitPerso) {
+		// Tour adverse sur soi	-100
+		if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur == traitPerso) {
+			evaluation = evaluation - 100;
+		}
+
+		// Tour 5 adverse	-100
+		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
+		   currentPosition.cols[origine].couleur != traitPerso) {
+			evaluation = evaluation - 100;
+		}
+
+		// isoler pion adverse - 100
+		if(currentPosition.cols[origine].couleur != traitPerso && voisinDestination.nb - 1 == 0) {
+			evaluation = evaluation - 100;
+		}
+
+		// Tour adverse à moins de voisin à la destination (donc en train d'être isolé)
+		if(currentPosition.cols[origine].couleur != traitPerso && (voisinOrigine.nb > voisinDestination.nb - 1)) {
+			evaluation = evaluation - scoreSouhaité; // Score négatif car on isole une tour adverse
+		}
+
+		// averse sur adverse	68
+		if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
+			evaluation = evaluation + 68;
+		}
 	}
 
-	// isoler pion adverse	-100
+	// Si la tour que l'on déplace est de notre couleur
+	if(currentPosition.cols[origine].couleur == traitPerso) {
+		// soi sur adverse	58
+		if(currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
+			evaluation = evaluation + 58;
+		}
 
-	// Tour 5 adverse	-100
-	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
-	   currentPosition.cols[origine].couleur != traitPerso) {
-		evaluation = evaluation - 100;
+		// Tour alliée à moins de voisin à la destination (donc en train d'être isolé)
+		if(currentPosition.cols[origine].couleur == traitPerso && (voisinOrigine.nb > voisinDestination.nb - 1)) {
+			evaluation = evaluation + scoreSouhaité; // Score positif car on isole une tour alliée
+		}
+
+		// Tour de 5 sur son propre pion	90
+		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
+		   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur == traitPerso)) {
+			evaluation = evaluation + 90;
+		}
+
+		// Tour de 4 si aucune tour de 1 à côté de destination
+		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 4 &&
+		   currentPosition.cols[origine].couleur == traitPerso) {
+			int i = 0;
+			for(i = 0; i < voisinDestination.nb; i++) {
+				if(currentPosition.cols[voisinDestination.cases[i]].nb == 1 && voisinDestination.cases[i] != origine) {
+					break;
+				}
+			}
+			if(currentPosition.cols[voisinDestination.cases[i]].nb != 1) {
+				evaluation = evaluation + 80;
+			}
+		}
+
+		// Isole tour alliée
+		if(currentPosition.cols[origine].couleur == traitPerso && voisinDestination.nb - 1 == 0) {
+			evaluation = evaluation + scoreSouhaité; // peut-etre 100 car tour pleine  mais pas forcement de 5;
+		}
+
+		// Tour 5 sur pion adverse	100
+		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
+		   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso)) {
+			evaluation = evaluation + 100;
+		}
 	}
 
 	// Tour de 3 si tour de 2 à côté de destination	-90
@@ -296,58 +355,12 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 	}
 
 	// Isoler 4 voisins	50
-
 	// contre isoler 3 voisins	55
-
-	// soi sur adverse	58
-	if(currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
-		evaluation = evaluation + 58;
-	}
-
 	// Isoler 3 voisins	60
-
 	// contre isoler 2 voisins	65
-
-	// averse sur adverse	68
-	if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
-		evaluation = evaluation + 68;
-	}
-
 	// Isoler 2 voisins	70
-
 	// contre isoler 1 voisin	75
-
-	// if((currentPosition.cols[origine].couleur != traitPerso) && (voisinOrigine.nb==1))
-	// {
-	//     evaluation=75;
-	// }
-
 	// Isoler 1 voisin	80
-
-	// Tour de 4 si aucune tour de 1 à côté de destination
-	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 4 &&
-	   currentPosition.cols[origine].couleur == traitPerso) {
-		int i = 0;
-		for(i = 0; i < voisinDestination.nb; i++) {
-			if(currentPosition.cols[voisinDestination.cases[i]].nb == 1 && voisinDestination.cases[i] != origine) {
-				break;
-			}
-		}
-		if(currentPosition.cols[voisinDestination.cases[i]].nb != 1) {
-			evaluation = evaluation + 80;
-		}
-	}
-
-	// Tour de 5 sur son propre pion	90
-	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
-	   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur == traitPerso)) {
-		evaluation = evaluation + 90;
-	}
-	// Tour 5 sur pion adverse	100
-	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
-	   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso)) {
-		evaluation = evaluation + 100;
-	}
 
 	// T_Voisins voisins = getVoisins(destination);
 	// for(int i = 0; i < voisins.nb; i++) {
@@ -380,8 +393,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 			printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
 		ecrireIndexCoup(result);
 	}
-	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10)
-	{
+	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10) {
 		int coupOuverture = ouverture(currentPosition, listeCoups);
 		if(coupOuverture != -1) {
 			printf("On écrit le coup %d (o:%d, d:%d)\n", coupOuverture, listeCoups.coups[coupOuverture].origine,
@@ -389,8 +401,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 			ecrireIndexCoup(coupOuverture);
 		}
 	}
-	else
-	{
+	else {
 		ecrireIndexCoup(0);
 	}
 
