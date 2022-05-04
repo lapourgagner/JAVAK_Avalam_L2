@@ -246,6 +246,9 @@ float evaluerScorePlateau(T_Position currentPosition)
 	int score5_soi_coeff = 1;
 	int score5_adv_coeff = 1;
 
+	int score_total = 0 ,score_isole;
+	octet myColor = currentPosition.trait;
+
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
 	if(JAU == currentPosition.trait) {
@@ -261,6 +264,55 @@ float evaluerScorePlateau(T_Position currentPosition)
 		score5_adv = score.nbJ5;
 	}
 
+	// Evaluer le nombre de pions isolés en notre faveur . VALEUR A DETERMINER !!
+
+	for(int i=0; i< NBCASES ; i++)
+	{
+		switch (currentPosition.cols[i].nb)
+		{
+			case 1:
+				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
+					score_total = score_total + 80;
+				else
+					score_total = score_total + 5;
+				
+				break;
+			
+			case 2:
+				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
+					score_total = score_total + 80;
+				else
+					score_total = score_total + 5;
+				
+				break;
+			case 3:
+				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
+					score_total = score_total + 80;
+				else
+					score_total = score_total + 5;
+				
+				break;
+			
+			case 4:
+				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
+					score_total = score_total + 80;
+				else
+					score_total = score_total + 5;
+				
+				break;
+			
+			case 5:
+				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
+					score_total = score_total + 80;
+				else
+					score_total = score_total + 5;
+				
+				break;
+			
+			default:
+				break;
+		}
+	}
 	// TODO: mutiplier toutes lezs valeurs que l'on a obtenu par des coeffecicient à defeinir pour avoir un score final du
 	// plateau, à comparer aux auutres mo ments score = ;
 
@@ -389,12 +441,12 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	// Gestion des bonus/malus:
 	if(11 > currentPosition.numCoup) // (bj, br, mj, mr)
 	{
-		// result = placerBonus(currentPosition, listeCoups);
+		result = placerBonus(currentPosition, listeCoups);
 
-		// if(result != -1)
-		// 	printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
+		if(result != -1)
+		printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
 
-		// ecrireIndexCoup(result);
+		ecrireIndexCoup(result);
 		int coupOuverture = ouverture(currentPosition, listeCoups);
 		if(coupOuverture != -1) {
 			printf("On écrit le coup %d (o:%d, d:%d)\n", coupOuverture, listeCoups.coups[coupOuverture].origine,
