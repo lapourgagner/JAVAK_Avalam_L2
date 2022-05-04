@@ -62,13 +62,13 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 	switch(currentPosition.numCoup) {
 		case 4: // Malus rouge
 			//
-			coup = 2;
+			coup = rechercheCoup(listeCoups,2,2);
 			return coup;
 			break;
 
 		case 3: // Malus jaune
 			//
-			coup = 1;
+			coup = rechercheCoup(listeCoups,1,1);
 			return coup;
 			break;
 
@@ -80,16 +80,14 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 					tempo = bonusJaune;
 			}
 			if(tempo == 28) {
-				currentPosition.evolution.bonusR = 22;
 				coup							 = 22;
 			}
 			else if(tempo == 19) {
-				currentPosition.evolution.bonusR = 25;
-				coup							 = 25;
+				coup							 = rechercheCoup(listeCoups,25,25);
+				
 			}
 			else {
-				currentPosition.evolution.bonusR = 1;
-				coup							 = 1;
+				coup							 = rechercheCoup(listeCoups,1,1);
 			}
 			return coup;
 			break;
@@ -100,23 +98,7 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 			if(currentPosition.trait == JAU) {
 				// Technique du cobra ancestral
 
-				// octet tab[] = {11, 17, 18, 19, 25, 26};
-				// octet tempo;
-				// octet malusRouge = currentPosition.evolution.malusR;
-				// for(int i = 0; i < 8; i++) {
-				// 	if(tab[i] == malusRouge)
-				// 		tempo = malusRouge;
-				// }
-				// if(currentPosition.evolution.malusR == tempo) {
-				// 	currentPosition.evolution.bonusJ = 19;
-				// 	coup							 = 19;
-				// }
-				// else {
-				// 	currentPosition.evolution.bonusJ = 28;
-				// 	coup							 = 28;
-				// }
-				currentPosition.evolution.bonusJ = 19;
-				coup							 = 19;
+				coup							 = rechercheCoup(listeCoups,19,19);
 			}
 
 			return coup;
@@ -264,55 +246,6 @@ float evaluerScorePlateau(T_Position currentPosition)
 		score5_adv = score.nbJ5;
 	}
 
-	// Evaluer le nombre de pions isolés en notre faveur . VALEUR A DETERMINER !!
-
-	for(int i=0; i< NBCASES ; i++)
-	{
-		switch (currentPosition.cols[i].nb)
-		{
-			case 1:
-				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
-					score_total = score_total + 80;
-				else
-					score_total = score_total + 5;
-				
-				break;
-			
-			case 2:
-				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
-					score_total = score_total + 80;
-				else
-					score_total = score_total + 5;
-				
-				break;
-			case 3:
-				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
-					score_total = score_total + 80;
-				else
-					score_total = score_total + 5;
-				
-				break;
-			
-			case 4:
-				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
-					score_total = score_total + 80;
-				else
-					score_total = score_total + 5;
-				
-				break;
-			
-			case 5:
-				if(currentPosition.cols[i].couleur == myColor && nbVoisins(i) == 0)
-					score_total = score_total + 80;
-				else
-					score_total = score_total + 5;
-				
-				break;
-			
-			default:
-				break;
-		}
-	}
 	// TODO: mutiplier toutes lezs valeurs que l'on a obtenu par des coeffecicient à defeinir pour avoir un score final du
 	// plateau, à comparer aux auutres mo ments score = ;
 
@@ -401,7 +334,7 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 			}
 		}
 		if(currentPosition.cols[voisinDestination.cases[i]].nb != 1) {
-			evaluation = evaluation + scoreSouhaité
+			evaluation = evaluation + 80;
 		}
 	}
 
@@ -439,14 +372,16 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	}
 
 	// Gestion des bonus/malus:
-	if(11 > currentPosition.numCoup) // (bj, br, mj, mr)
+	if(5 > currentPosition.numCoup) // (bj, br, mj, mr)
 	{
 		result = placerBonus(currentPosition, listeCoups);
 
 		if(result != -1)
-		printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
-
+			printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
 		ecrireIndexCoup(result);
+	}
+	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10)
+	{
 		int coupOuverture = ouverture(currentPosition, listeCoups);
 		if(coupOuverture != -1) {
 			printf("On écrit le coup %d (o:%d, d:%d)\n", coupOuverture, listeCoups.coups[coupOuverture].origine,
@@ -454,14 +389,9 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 			ecrireIndexCoup(coupOuverture);
 		}
 	}
-	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10) {
-		result = ouverture(currentPosition, listeCoups);
-
-		if(result == -1) {
-			ecrireIndexCoup(0);
-		}
-		ecrireIndexCoup(result);
-		return;
+	else
+	{
+		ecrireIndexCoup(0);
 	}
 
 	printf("Etat des bonus/malus: bj: %d, mj: %d, br: %d, mr:%d. Trait: %d\n", currentPosition.evolution.bonusJ,
