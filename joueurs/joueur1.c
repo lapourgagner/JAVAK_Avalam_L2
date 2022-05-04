@@ -270,71 +270,109 @@ float evaluerScorePlateau(T_Position currentPosition)
 
 float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination)
 {
-	float evaluation = 0;
-	octet traitAdversaire;
-	octet traitPerso;
+	float	  evaluation = 0;
+	octet	  traitPerso = currentPosition.trait;
+	T_Voisins voisinOrigine;
+	T_Voisins voisinDestination;
+	voisinOrigine	  = getVoisins(origine);
+	voisinDestination = getVoisins(destination);
 
 	// Tour adverse sur soi	-100
-	if (currentPosition.cols[origine].couleur == traitAdversaire && currentPosition.cols[destination].couleur == traitPerso)
-	{
+	if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur == traitPerso) {
 		evaluation = evaluation - 100;
 	}
-	
+
 	// isoler pion adverse	-100
-	
 
 	// Tour 5 adverse	-100
-	if ((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 && currentPosition.cols[origine].couleur == traitAdversaire)
-	{
+	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
+	   currentPosition.cols[origine].couleur != traitPerso) {
 		evaluation = evaluation - 100;
 	}
-	
+
 	// Tour de 3 si tour de 2 à côté de destination	-90
+	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb == 3)) {
+		for(int i = 0; i < voisinDestination.nb; i++) {
+			if(currentPosition.cols[voisinDestination.cases[i]].nb == 2 && voisinDestination.cases[i] != origine) {
+				evaluation = evaluation - 90;
+				break;
+			}
+		}
+	}
+
 	// Tour de 4 si tour de 1 à côté de destination	-90
+	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb == 4)) {
+		for(int i = 0; i < voisinDestination.nb; i++) {
+			if(currentPosition.cols[voisinDestination.cases[i]].nb == 1 && voisinDestination.cases[i] != origine) {
+				evaluation = evaluation - 90;
+				break;
+			}
+		}
+	}
+
 	// Isoler 4 voisins	50
+
 	// contre isoler 3 voisins	55
+
 	// soi sur adverse	58
-	if (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur == traitAdversaire)
-	{
+	if(currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
 		evaluation = evaluation + 58;
 	}
-	
+
 	// Isoler 3 voisins	60
+
 	// contre isoler 2 voisins	65
+
 	// averse sur adverse	68
-	if (currentPosition.cols[origine].couleur == traitAdversaire && currentPosition.cols[destination].couleur == traitAdversaire)
-	{
+	if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
 		evaluation = evaluation + 68;
 	}
-	
+
 	// Isoler 2 voisins	70
+
 	// contre isoler 1 voisin	75
+
+	// if((currentPosition.cols[origine].couleur != traitPerso) && (voisinOrigine.nb==1))
+	// {
+	//     evaluation=75;
+	// }
+
 	// Isoler 1 voisin	80
+
+	// Tour de 4 si aucune tour de 1 à côté de destination
+	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 4 &&
+	   currentPosition.cols[origine].couleur == traitPerso) {
+		int i = 0;
+		for(i = 0; i < voisinDestination.nb; i++) {
+			if(currentPosition.cols[voisinDestination.cases[i]].nb == 1 && voisinDestination.cases[i] != origine) {
+				break;
+			}
+		}
+		if(currentPosition.cols[voisinDestination.cases[i]].nb != 1) {
+			evaluation = evaluation + scoreSouhaité
+		}
+	}
+
 	// Tour de 5 sur son propre pion	90
-	if ((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 
-		&& (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur == traitPerso))
-	{
+	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
+	   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur == traitPerso)) {
 		evaluation = evaluation + 90;
 	}
 	// Tour 5 sur pion adverse	100
-	if ((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 
-		&& (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur == traitAdversaire))
-	{
+	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
+	   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso)) {
 		evaluation = evaluation + 100;
 	}
-	
 
-	T_Voisins voisins = getVoisins(destination);
-	for (int i = 0; i < voisins.nb; i++)
-	{
-		if (voisins.case[i] == 0 || voisins.case[i] == origine) // Si le voisin est une case vide ou que c'est notre place de départ, on ignore
-		{
-			break;
-		}
-		
-		
-	}
-	
+	// T_Voisins voisins = getVoisins(destination);
+	// for(int i = 0; i < voisins.nb; i++) {
+	// 	if(voisins.case[i] == 0 ||
+	// 	   voisins.case[i] == origine) // Si le voisin est une case vide ou que c'est notre place de départ, on ignore
+	// 	{
+	// 		break;
+	// 	}
+	// }
+
 	return evaluation;
 }
 
