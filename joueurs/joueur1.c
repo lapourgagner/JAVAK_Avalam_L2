@@ -163,38 +163,38 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if(currentPosition.evolution.bonusR == 22) {
 			switch(currentPosition.numCoup) {
 				case 5:;
-						return rechercheCoup(listeCoupsSoi, 22, 29);
+					return rechercheCoup(listeCoupsSoi, 22, 29);
 					break;
 
 				case 7:;
 					if(currentPosition.cols[21].nb == 1 && currentPosition.cols[20].couleur == ROU &&
 					   estValide(currentPosition, 29, 28) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 29, 28);
-						return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
+					return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
 					break;
 
 				case 9:;
-						return rechercheCoup(listeCoupsSoi, 20, 28);
+					return rechercheCoup(listeCoupsSoi, 20, 28);
 			}
 		}
 		else {
 			switch(currentPosition.numCoup) {
 				case 5:;
-						return rechercheCoup(listeCoupsSoi, 25, 18);
+					return rechercheCoup(listeCoupsSoi, 25, 18);
 					break;
 
 				case 7:;
 					if(currentPosition.cols[26].nb == 1 && currentPosition.cols[27].couleur == ROU &&
 					   estValide(currentPosition, 18, 19) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 18, 19);
-						return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
+					return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
 					break;
 
 				case 9:;
 					if(currentPosition.cols[19].nb == 3 && currentPosition.cols[19].couleur == ROU &&
 					   estValide(currentPosition, 26, 35) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 26, 35);
-						return rechercheCoup(listeCoupsSoi, 20, 28); // else implicite
+					return rechercheCoup(listeCoupsSoi, 20, 28); // else implicite
 			}
 		}
 	}
