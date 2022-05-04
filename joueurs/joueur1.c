@@ -115,43 +115,43 @@ int zonesafe(T_Position currentPosition)
 
 int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 {
+	if(zonesafe(currentPosition) == -1) {
+		printf("Erreur zonesafe == -1 (?)\n");
+		return -1;
+	}
+
 	if(currentPosition.trait == JAU) {
 		// Technique du cobra ancestral
 
-		if(zonesafe(currentPosition) == -1)
-			return -1;
-
 		if(currentPosition.evolution.bonusJ == 28) {
-			switch(currentPosition.numCoup) { // ??
-				case 5:
+			switch(currentPosition.numCoup) {
+				case 4:;
 					return rechercheCoup(listeCoupsSoi, 21, 29);
 					break;
 
-				case 7:
-					if(estValide(currentPosition, 29, 20) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 29, 20);
+				case 6:;
+					return rechercheCoup(listeCoupsSoi, 29, 20);
 					break;
 
-				case 9:
-					if(estValide(currentPosition, 20, 28) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 20, 28);
+				case 8:;
+					return rechercheCoup(listeCoupsSoi, 20, 28);
 			}
 		}
 
 		else {
 			switch(currentPosition.numCoup) {
-				case 5:
+				case 4:
 					return rechercheCoup(listeCoupsSoi, 26, 18);
 					break;
 
-				case 7:
-					if(estValide(currentPosition, 18, 27) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 18, 27);
+				case 6:;
+					return rechercheCoup(listeCoupsSoi, 18, 27);
 					break;
 
-				case 9:
-					if(estValide(currentPosition, 27, 19) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 27, 19);
+				case 8:;
+					return rechercheCoup(
+						listeCoupsSoi, 27,
+						19); // TODO: C'est un coup inutile, car c'est la seule possibilité de l'ilot, à faire en fin de partie
 					break;
 			}
 		}
@@ -159,50 +159,41 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 	else if(currentPosition.trait == ROU) {
 		// Technique de la mante religieuse
 
-		if(zonesafe(currentPosition) == -1)
-			return -1;
-
 		if(currentPosition.evolution.bonusR == 22) {
 			switch(currentPosition.numCoup) {
-				case 6:
-					if(estValide(currentPosition, 22, 29) == VRAI)
+				case 5:;
 						return rechercheCoup(listeCoupsSoi, 22, 29);
 					break;
 
-				case 8:
+				case 7:;
 					if(currentPosition.cols[21].nb == 1 && currentPosition.cols[20].couleur == ROU &&
 					   estValide(currentPosition, 29, 28) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 29, 28);
-					else if(estValide(currentPosition, 29, 20) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 29, 20);
+						return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
 					break;
 
-				case 10:
-					if(estValide(currentPosition, 20, 28) == VRAI)
+				case 9:;
 						return rechercheCoup(listeCoupsSoi, 20, 28);
 			}
 		}
 		else {
 			switch(currentPosition.numCoup) {
-				case 6:
-					if(estValide(currentPosition, 25, 18) == VRAI)
+				case 5:;
 						return rechercheCoup(listeCoupsSoi, 25, 18);
 					break;
 
-				case 8:
+				case 7:;
 					if(currentPosition.cols[26].nb == 1 && currentPosition.cols[27].couleur == ROU &&
 					   estValide(currentPosition, 18, 19) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 18, 19);
-					else if(estValide(currentPosition, 29, 20) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 29, 20);
+						return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
 					break;
 
-				case 10:
+				case 9:;
 					if(currentPosition.cols[19].nb == 3 && currentPosition.cols[19].couleur == ROU &&
 					   estValide(currentPosition, 26, 35) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 26, 35);
-					else if(estValide(currentPosition, 20, 28) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 20, 28);
+						return rechercheCoup(listeCoupsSoi, 20, 28); // else implicite
 			}
 		}
 	}
@@ -364,7 +355,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	}
 
 	// Gestion des bonus/malus:
-	if(5 > currentPosition.numCoup) // (bj, br, mj, mr)
+	if(4 > currentPosition.numCoup) // (bj, br, mj, mr)
 	{
 		result = placerBonus(currentPosition, listeCoups);
 
@@ -373,11 +364,12 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 		printf("On place le le bonus, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
 			   listeCoups.coups[result].destination);
 		ecrireIndexCoup(result);
+		printf("\033[0m\n");
 		return; // C'est la fin du programme pour cette action, évite un else pour les ouvertures
 	}
 
 	// Gestion des ouvertures
-	if(currentPosition.numCoup <= 10) // Valeur de fin des ouvertures à déterminer
+	if(currentPosition.numCoup < 10) // Valeur de fin des ouvertures à déterminer
 	{
 		result = ouverture(currentPosition, listeCoups);
 		if(result == -1)
@@ -385,23 +377,26 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 		printf("On place une ouverture, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
 			   listeCoups.coups[result].destination);
 		ecrireIndexCoup(result);
-		return; // C'est la fin du programme pour cette action, évite un else pour la partie jeu
+		if(result != -1) {
+			printf("\033[0m\n");
+			return; // C'est la fin du programme pour cette action, évite un else pour la partie jeu
+		}
+		printf("Coup non satisfaisant, situation possiblement problématique; tentative de placememnt de coup classique");
 	}
 
 	// Partie de jeu
-	else {
-		result = 0;
+	result = 0;
 
-		if(result == -1)
-			printf("IMPOSSIBLE DE PLACER LE COUP: -1 (numCoup: %d)\n", currentPosition.numCoup);
-		printf("On place le le coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
-			   listeCoups.coups[result].destination);
-		ecrireIndexCoup(result);
-	}
+	if(result == -1)
+		printf("IMPOSSIBLE DE PLACER LE COUP: -1 (numCoup: %d)\n", currentPosition.numCoup);
+	printf("On place le le coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
+		   listeCoups.coups[result].destination);
+	ecrireIndexCoup(result);
 
 	printf("Etat des bonus/malus: bj: %d, mj: %d, br: %d, mr:%d. Trait: %d\n", currentPosition.evolution.bonusJ,
 		   currentPosition.evolution.malusJ, currentPosition.evolution.bonusR, currentPosition.evolution.malusR,
 		   currentPosition.trait);
 
 	printf("\033[0m\n"); // On repasse en police par déaut pour les messages de gestion
+	return;
 }
