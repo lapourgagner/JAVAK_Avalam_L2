@@ -10,7 +10,7 @@ dep:
 
 LIB=-L../tournoi/lib
 INC=-I../include
-OPTS=-D_POSIX_C_SOURCE=199309L -std=c99
+OPTS=-D_POSIX_C_SOURCE=199309L -std=c99 -Wall -Wextra
 
 
 SRC=humain1.c humain2.c humain3.c joueur1.c joueur2.c joueur3.c joueur4.c joueur5.c

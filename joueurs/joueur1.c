@@ -22,6 +22,7 @@ void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
 // Recher l'index d'un coup avec un case origine et une case destiantion donnée
 int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 {
+	printf("RC: o:%d d:%d\n", origine, destination);
 	int moy	  = 0;
 	int debut = 0;
 	int size  = 8 * NBCASES;
@@ -60,20 +61,17 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 	int	  coup;
 	octet tempo;
 	switch(currentPosition.numCoup) {
-		case 4: // Malus rouge
-			//
+		case 3:; // Malus rouge
 			coup = rechercheCoup(listeCoups, 2, 2);
 			return coup;
 			break;
 
-		case 3: // Malus jaune
-			//
+		case 2:; // Malus jaune
 			coup = rechercheCoup(listeCoups, 1, 1);
 			return coup;
 			break;
 
-		case 2:; // Bonus rouge
-			//
+		case 1:; // Bonus rouge
 			octet bonusJaune = currentPosition.evolution.bonusJ;
 			for(int i = 0; i < 2; i++) {
 				if(19 == bonusJaune || 28 == bonusJaune)
@@ -91,20 +89,16 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 			return coup;
 			break;
 
-		case 1: // Bonus jaune
-			//
-
+		case 0:; // Bonus jaune
 			if(currentPosition.trait == JAU) {
 				// Technique du cobra ancestral
 
 				coup = rechercheCoup(listeCoups, 19, 19);
 			}
-
 			return coup;
 			break;
 
-		default:
-
+		default:;
 			return -1;
 			break;
 	}
@@ -248,6 +242,9 @@ float evaluerScorePlateau(T_Position currentPosition)
 	// TODO: mutiplier toutes lezs valeurs que l'on a obtenu par des coeffecicient à defeinir pour avoir un score final du
 	// plateau, à comparer aux auutres mo ments score = ;
 
+	evaluation =
+		score_soi * score_soi_coeff + score_adv * score_adv_coeff + score5_soi * score5_soi_coeff + score5_adv * score5_adv_coeff;
+
 	printf1("Evaluation: %f\n", evaluation);
 	return evaluation;
 }
@@ -376,12 +373,12 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 {
-	printf("\033[0;31m");
+	printf("\033[0;31m\n"); // On passe la couleur de la sortie interne du bot en rouge pour plus de lisibilité
 	int result;
 
-	// Pour le debug: Affiche tous les coups possibles, et même plus, ceux qui n'exitent pas !
+	// Pour le debug: Affiche tous les coups possibles
 	for(int i = 0; i < listeCoups.nb; i++) {
-		printf("o:%d d: %d n:%d | ", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
+		printf("o:%d d:%d n:%d | ", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
 	}
 
 	// Gestion des bonus/malus:
@@ -389,25 +386,40 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	{
 		result = placerBonus(currentPosition, listeCoups);
 
-		if(result != -1)
-			printf("Erreur lors du placememnt des bonus (numCoup: %d)\n", currentPosition.numCoup);
+		if(result == -1)
+			printf("IMPOSSIBLE DE PLACER LE BONUS/MALUS: -1 (numCoup: %d)\n", currentPosition.numCoup);
+		printf("On place le le bonus, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
+			   listeCoups.coups[result].destination);
 		ecrireIndexCoup(result);
+		return; // C'est la fin du programme pour cette action, évite un else pour les ouvertures
 	}
-	else if(currentPosition.numCoup >= 5 && currentPosition.numCoup <= 10) {
-		int coupOuverture = ouverture(currentPosition, listeCoups);
-		if(coupOuverture != -1) {
-			printf("On écrit le coup %d (o:%d, d:%d)\n", coupOuverture, listeCoups.coups[coupOuverture].origine,
-				   listeCoups.coups[coupOuverture].destination);
-			ecrireIndexCoup(coupOuverture);
-		}
+
+	// Gestion des ouvertures
+	if(currentPosition.numCoup <= 10) // Valeur de fin des ouvertures à déterminer
+	{
+		result = ouverture(currentPosition, listeCoups);
+		if(result == -1)
+			printf("IMPOSSIBLE DE PLACER L'OUVERTURE: -1 (numCoup: %d)\n", currentPosition.numCoup);
+		printf("On place une ouverture, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
+			   listeCoups.coups[result].destination);
+		ecrireIndexCoup(result);
+		return; // C'est la fin du programme pour cette action, évite un else pour la partie jeu
 	}
+
+	// Partie de jeu
 	else {
-		ecrireIndexCoup(0);
+		result = 0;
+
+		if(result == -1)
+			printf("IMPOSSIBLE DE PLACER LE COUP: -1 (numCoup: %d)\n", currentPosition.numCoup);
+		printf("On place le le coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
+			   listeCoups.coups[result].destination);
+		ecrireIndexCoup(result);
 	}
 
 	printf("Etat des bonus/malus: bj: %d, mj: %d, br: %d, mr:%d. Trait: %d\n", currentPosition.evolution.bonusJ,
 		   currentPosition.evolution.malusJ, currentPosition.evolution.bonusR, currentPosition.evolution.malusR,
 		   currentPosition.trait);
 
-	printf("\033[0m");
+	printf("\033[0m\n"); // On repasse en police par déaut pour les messages de gestion
 }
