@@ -34,20 +34,22 @@ int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 		if(listeCoups.coups[moy].origine == 0 && moy != 0) {
 			size = moy - 1;
 		}
-		else if(listeCoups.coups[moy].origine == origine) {
-			if(listeCoups.coups[moy].destination > destination) {
+		else if(listeCoups.coups[moy].origine == origine) { //If origine in tab = origine wanted
+			if(listeCoups.coups[moy].destination > destination) { //If the value of destination in tab > destination wanted
 				while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination > destination)
-					moy--;
+					moy--; //We go up the array to find the right destination (because the array is in sort ascending)
 			}
-			else if(listeCoups.coups[moy].destination < destination) {
+			else if(listeCoups.coups[moy].destination < destination) { //If the value of destination in array < destination wanted
 				while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination < destination)
-					moy++;
+					moy++; //We go down the array to find the right destinaion
 			}
 			if(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination == destination) {
-				return moy;
+				//If the origine and destination are the one wanted
+				return moy; //We return the index of the cell in the table
 			}
-			return -1;
+			return -1; //Else return -1
 		}
+		//Dichotomous search
 		else if(listeCoups.coups[moy].origine < origine) {
 			debut = moy + 1;
 		}
