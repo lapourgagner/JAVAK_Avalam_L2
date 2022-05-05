@@ -60,8 +60,9 @@ int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 	return -1;
 }
 
+
+// Placer les Bonus selon l'état du plateau actuel
 int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
-// TODO: Adapater technique de la mante religieuse, pas adaptée avec l'ordre de placement des bonus
 {
 	int	  coup;
 	octet tempo;
@@ -89,7 +90,7 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 				coup = rechercheCoup(listeCoups, 25, 25);
 			}
 			else {
-				coup = rechercheCoup(listeCoups, 1, 1);
+				coup = rechercheCoup(listeCoups, 22,22);
 			}
 			return coup;
 			break;
@@ -109,18 +110,28 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 	}
 }
 
+// Vérifie que les bonus sont sécurisés ainsi interrompre l'ouverture pour jouer avec évaluerCoupScore 
 int zonesafe(T_Position currentPosition)
 {
 	octet bonusJaune = currentPosition.evolution.bonusJ;
-	if(currentPosition.cols[bonusJaune].couleur == ROU)
-		return -1;
-	else if(bonusJaune != 28 && bonusJaune != 20 && bonusJaune != 19 && bonusJaune != 27)
-		return -1;
-	return 1;
+	if (currentPosition.trait == JAU)
+	{
+		if(currentPosition.cols[bonusJaune].couleur == ROU && currentPosition.trait == JAU)
+			return -1;
+		else if(bonusJaune != 28 && bonusJaune != 20 && bonusJaune != 19 && bonusJaune != 27 && currentPosition.trait == JAU)
+			return -1;
+		return 1;
+	}
+	else
+	{
+		return 1;
+	}
 }
 
+// Effectue les 4 premiers coups pour sécuriser note bonus ou récupérér le bonus adverse selon le trait et l'état du plateau
 int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 {
+	// On vérifie s'il est utile de continuer l'ouverture
 	if(zonesafe(currentPosition) == -1) {
 		printf("Erreur zonesafe == -1 (?)\n");
 		return -1;
