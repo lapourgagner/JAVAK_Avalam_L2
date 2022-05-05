@@ -6,18 +6,20 @@
 #include <stdlib.h>
 
 // Utile pour simuler un coup
-void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
-{
-	currentPositionCopy.trait	= currentPosition.trait;
-	currentPositionCopy.numCoup = currentPosition.numCoup;
-	for(int i = 0; i < NBCASES; i++) // TODO: Fix the copy, will maybe fix SPD
-		currentPositionCopy.cols[i] = currentPosition.cols[i];
-	currentPositionCopy.evolution.bonusJ = currentPosition.evolution.bonusJ;
-	currentPositionCopy.evolution.bonusR = currentPosition.evolution.bonusR;
-	currentPositionCopy.evolution.malusJ = currentPosition.evolution.malusJ;
-	currentPositionCopy.evolution.malusR = currentPosition.evolution.malusR;
-	return;
-}
+// void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
+// {
+// 	currentPositionCopy.trait	= currentPosition.trait;
+// 	currentPositionCopy.numCoup = currentPosition.numCoup;
+// 	for(int i = 0; i < NBCASES; i++) { // TODO: Fix the copy, will maybe fix SPD
+// 		currentPositionCopy.cols[i].nb		= currentPosition.cols[i].nb;
+// 		currentPositionCopy.cols[i].couleur = currentPosition.cols[i].couleur;
+// 	}
+// 	currentPositionCopy.evolution.bonusJ = currentPosition.evolution.bonusJ;
+// 	currentPositionCopy.evolution.bonusR = currentPosition.evolution.bonusR;
+// 	currentPositionCopy.evolution.malusJ = currentPosition.evolution.malusJ;
+// 	currentPositionCopy.evolution.malusR = currentPosition.evolution.malusR;
+// 	return;
+// }
 
 // Recher l'index d'un coup avec un case origine et une case destiantion donnée
 int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
@@ -227,22 +229,24 @@ float evaluerScorePlateau(T_Position currentPosition)
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
 	if(JAU == currentPosition.trait) {
-		score_soi  = score.nbJ;
-		score_adv  = score.nbR;
-		score5_soi = score.nbJ5;
-		score5_adv = score.nbR5;
+		score_soi  = (int) score.nbJ;
+		score_adv  = (int) score.nbR;
+		score5_soi = (int) score.nbJ5;
+		score5_adv = (int) score.nbR5;
 	}
 	else {
-		score_soi  = score.nbR;
-		score_adv  = score.nbJ;
-		score5_soi = score.nbR5;
-		score5_adv = score.nbJ5;
+		score_soi  = (int) score.nbR;
+		score_adv  = (int) score.nbJ;
+		score5_soi = (int) score.nbR5;
+		score5_adv = (int) score.nbJ5;
 	}
 
 	// TODO: déterminer coeff
 
 	evaluation =
-		score_soi * score_soi_coeff - score_adv * score_adv_coeff + score5_soi * score5_soi_coeff - score5_adv * score5_adv_coeff;
+	 	score_soi * score_soi_coeff - score_adv * score_adv_coeff + score5_soi * score5_soi_coeff - score5_adv * score5_adv_coeff;
+
+	// printf(" soi:%d, adv:%d ", score_soi, score_adv);
 
 	return evaluation;
 }
@@ -434,28 +438,26 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 	return evaluation;
 }
 
-float evaluerScoreGen(T_Position currentPosition, T_Position emptyPosition, int origine, int destination)
+float evaluerScoreGen(T_Position currentPosition, T_Position nextPosition, int origine, int destination)
 {
-	copierPlateau(currentPosition, emptyPosition);
+	int currentPositionScore = evaluerScorePlateau(currentPosition);
+	int nextPositionScore = evaluerScorePlateau(nextPosition);
+	float scorePlateau = (float) abs(currentPositionScore - nextPositionScore);
+	// if (currentPositionScore > nextPositionScore) // Coup avantageux // Le score de score plateu est déjà positif
+	// {
+		
+	// }
+	if (currentPositionScore < nextPositionScore) { // Coup désavantageux // On le multiplie par -1 car on veut décourager ce coup
+		scorePlateau = -1 * scorePlateau;
+	}
 	
-	// On simule le coup qu'on veut évaluer:
-	emptyPosition.cols[destination].nb		= emptyPosition.cols[destination].nb + emptyPosition.cols[origine].nb;
-	emptyPosition.cols[destination].couleur = currentPosition.cols[origine].couleur;
-	emptyPosition.cols[origine].nb			= 0;
-	// On déplace aussi les bonus/malus
-	if(emptyPosition.evolution.bonusJ == origine)
-		emptyPosition.evolution.bonusJ = destination;
-	if(emptyPosition.evolution.malusJ == origine)
-		emptyPosition.evolution.malusJ = destination;
-	if(emptyPosition.evolution.bonusR == origine)
-		emptyPosition.evolution.bonusR = destination;
-	if(emptyPosition.evolution.malusR == origine)
-		emptyPosition.evolution.malusR = destination;
+	// On le ramène au num coup
+	// scorePlateau = scorePlateau + 2* currentPosition.numCoup;
 
-	float scorePlateau =
-		(evaluerScorePlateau(emptyPosition) - evaluerScorePlateau(currentPosition)) * 1; // TODO: Fix
-		// (currentPosition.numCoup / 3); // Score plateau final - initial. (gain net de points) Si positif, avantageux pour nous. On
-									   // tente de corrgier la diminution progressive des scores
+	// float scorePlateau = (evaluerScorePlateau(emptyPosition) - evaluerScorePlateau(currentPosition)) * 1; // TODO: Fix
+	// // (currentPosition.numCoup / 3); // Score plateau final - initial. (gain net de points) Si positif, avantageux pour nous. On
+	// // tente de corrgier la diminution progressive des scores
+	// printf(" SP1:%.0f SP2:%.0f", evaluerScorePlateau(currentPosition), evaluerScorePlateau(emptyPosition));
 	printf(" | SPD: %.0f | ", scorePlateau);
 	return scorePlateau + evaluerScoreCoup(currentPosition, origine, destination); // TODO: déterminer valeur
 }
@@ -470,6 +472,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 
 	// Pour le debug: Affiche tous les coups possibles
 	for(int i = 0; i < listeCoups.nb; i++) {
+		tempPlateau = jouerCoup(currentPosition, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
 		printf("o:%d d:%d n:%d", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
 		score_temp = evaluerScoreGen(currentPosition, tempPlateau, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
 		printf(" | SCG: %.0f", score_temp);
