@@ -382,7 +382,7 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 		if(origine == currentPosition.evolution.bonusJ || origine == currentPosition.evolution.bonusR ||
 		   destination == currentPosition.evolution.bonusJ || destination == currentPosition.evolution.bonusR) {
 			nb_evaluations++;
-			evaluation = evaluation + 20;
+			evaluation = evaluation + 75;
 			printf("f");
 		}
 
@@ -390,7 +390,7 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 		if(origine == currentPosition.evolution.malusJ || origine == currentPosition.evolution.malusR ||
 		   destination == currentPosition.evolution.malusJ || destination == currentPosition.evolution.malusR) {
 			nb_evaluations++;
-			evaluation = evaluation - 20;
+			evaluation = evaluation - 75;
 			printf("g");
 		}
 	}
