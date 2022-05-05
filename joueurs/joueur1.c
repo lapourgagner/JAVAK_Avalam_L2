@@ -136,6 +136,9 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 
 				case 8:;
 					return rechercheCoup(listeCoupsSoi, 20, 28);
+					break;
+				default:;
+					break;
 			}
 		}
 
@@ -150,9 +153,10 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 					break;
 
 				case 8:;
-					return rechercheCoup(
-						listeCoupsSoi, 27,
-						19); // TODO: C'est un coup inutile, car c'est la seule possibilité de l'ilot, à faire en fin de partie
+					// TODO: C'est un coup inutile, car c'est la seule possibilité de l'ilot, à faire en fin de partie
+					return rechercheCoup(listeCoupsSoi, 27, 19);
+					break;
+				default:
 					break;
 			}
 		}
@@ -175,6 +179,9 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 
 				case 9:;
 					return rechercheCoup(listeCoupsSoi, 20, 28);
+					break;
+				default:;
+					break;
 			}
 		}
 		else {
@@ -195,25 +202,27 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 					   estValide(currentPosition, 26, 35) == VRAI)
 						return rechercheCoup(listeCoupsSoi, 26, 35);
 					return rechercheCoup(listeCoupsSoi, 20, 28); // else implicite
+					break;
+				default:;
+					break;
 			}
 		}
 	}
 	return -1;
 }
 
+// Valeur du plateau relativement à l'adversaire (le plus grand est le mieux), possiblement négatif -> avantage à l'adversaire
 float evaluerScorePlateau(T_Position currentPosition)
 {
+	// TODO: SPD bugger a corriger; il est toujours positif
 	float evaluation = 0;
 
 	// Liste des paramètres
 	int score_soi, score_adv, score5_soi, score5_adv;
-	int score_soi_coeff	 = 1;
-	int score_adv_coeff	 = 1;
+	int score_soi_coeff	 = 2;
+	int score_adv_coeff	 = 2;
 	int score5_soi_coeff = 1;
 	int score5_adv_coeff = 1;
-
-	int	  score_total = 0, score_isole;
-	octet myColor	  = currentPosition.trait;
 
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
@@ -230,73 +239,108 @@ float evaluerScorePlateau(T_Position currentPosition)
 		score5_adv = score.nbJ5;
 	}
 
-	// TODO: mutiplier toutes lezs valeurs que l'on a obtenu par des coeffecicient à defeinir pour avoir un score final du
-	// plateau, à comparer aux auutres mo ments score = ;
+	// TODO: déterminer coeff
 
 	evaluation =
-		score_soi * score_soi_coeff + score_adv * score_adv_coeff + score5_soi * score5_soi_coeff + score5_adv * score5_adv_coeff;
+		score_soi * score_soi_coeff - score_adv * score_adv_coeff + score5_soi * score5_soi_coeff - score5_adv * score5_adv_coeff;
 
-	printf1("Evaluation: %f\n", evaluation);
 	return evaluation;
 }
 
-float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int origine, int destination)
+float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 {
-	float	  evaluation = 0;
-	octet	  traitPerso = currentPosition.trait;
-	T_Voisins voisinOrigine;
-	T_Voisins voisinDestination;
-	voisinOrigine	  = getVoisins(origine);
-	voisinDestination = getVoisins(destination);
+	float	  evaluation		= 0;
+	octet	  traitPerso		= currentPosition.trait;
+	T_Voisins voisinOrigine		= getVoisins(origine);
+	T_Voisins voisinDestination = getVoisins(destination);
+	int		  nb_evaluations	= 0; // Nombre de fois où l'évalaution a été modifée, pour le debug
 
 	// Si la tour que l'on déplace est de la couleur adverse
 	if(currentPosition.cols[origine].couleur != traitPerso) {
 		// Tour adverse sur soi	-100
-		if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur == traitPerso) {
-			evaluation = evaluation - 100;
+		if(currentPosition.cols[destination].couleur == traitPerso) {
+			nb_evaluations++;
+			evaluation = evaluation - 98;
+			printf("a");
 		}
 
 		// Tour 5 adverse	-100
-		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
-		   currentPosition.cols[origine].couleur != traitPerso) {
+		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5) {
+			nb_evaluations++;
 			evaluation = evaluation - 100;
+			printf("z");
 		}
 
 		// isoler pion adverse - 100
-		if(currentPosition.cols[origine].couleur != traitPerso && voisinDestination.nb - 1 == 0) {
-			evaluation = evaluation - 100;
+		if(voisinDestination.nb - 1 == 0) {
+			nb_evaluations++;
+			evaluation = evaluation - 99;
+			printf("e");
 		}
 
 		// Tour adverse à moins de voisin à la destination (donc en train d'être isolé)
-		if(currentPosition.cols[origine].couleur != traitPerso && (voisinOrigine.nb > voisinDestination.nb - 1)) {
-			evaluation = evaluation - scoreSouhaité; // Score négatif car on isole une tour adverse
+		if(voisinOrigine.nb >
+		   voisinDestination.nb - 1) { // TODO: raisonnement faux: 0 et 2 ne sont pas voisins, il ne faudrait donc pas faire -1
+			nb_evaluations++;
+			evaluation = evaluation - 50; // Score négatif car on isole une tour adverse // TODO: déterminer score
+			printf("r");
 		}
 
 		// averse sur adverse	68
-		if(currentPosition.cols[origine].couleur != traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
-			evaluation = evaluation + 68;
+		if(currentPosition.cols[destination].couleur != traitPerso) {
+			nb_evaluations++;
+			evaluation = evaluation + 50;
+			printf("t");
+		}
+
+		// Un bonus pour l'adversaire est en jeu
+		if(origine == currentPosition.evolution.bonusJ || origine == currentPosition.evolution.bonusR ||
+		   destination == currentPosition.evolution.bonusJ || destination == currentPosition.evolution.bonusR) {
+			nb_evaluations++;
+			evaluation = evaluation - 20;
+			printf("f");
+		}
+
+		// Un malus contre l'adversaire est en jeu
+		if(origine == currentPosition.evolution.malusJ || origine == currentPosition.evolution.malusR ||
+		   destination == currentPosition.evolution.malusJ || destination == currentPosition.evolution.malusR) {
+			nb_evaluations++;
+			evaluation = evaluation + 20;
+			printf("g");
 		}
 	}
 
 	// Si la tour que l'on déplace est de notre couleur
-	if(currentPosition.cols[origine].couleur == traitPerso) {
+	else {
 		// soi sur adverse	58
-		if(currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso) {
-			evaluation = evaluation + 58;
+		if(currentPosition.cols[destination].couleur != traitPerso) {
+			nb_evaluations++;
+			evaluation = evaluation + 50;
+			printf("y");
+		}
+		else { // Soi sur soi
+			nb_evaluations++;
+			evaluation = evaluation - 30;
+			printf("u");
 		}
 
 		// Tour alliée à moins de voisin à la destination (donc en train d'être isolé)
-		if(currentPosition.cols[origine].couleur == traitPerso && (voisinOrigine.nb > voisinDestination.nb - 1)) {
-			evaluation = evaluation + scoreSouhaité; // Score positif car on isole une tour alliée
+		if(voisinOrigine.nb >
+		   voisinDestination.nb - 1) { // TODO: raisonnement faux: 0 et 2 ne sont pas voisins, il ne faudrait donc pas faire -1
+			nb_evaluations++;
+			evaluation = evaluation + 50; // Score positif car on isole une tour alliée // TODO: détermienr score
+			printf("i");
 		}
 
 		// Tour de 5 sur son propre pion	90
 		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
-		   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur == traitPerso)) {
-			evaluation = evaluation + 90;
+		   currentPosition.cols[destination].couleur == traitPerso) {
+			nb_evaluations++;
+			evaluation = evaluation + 99;
+			printf("o");
 		}
 
-		// Tour de 4 si aucune tour de 1 à côté de destination
+		// Tour de 4 si aucune tour de 1 à côté de destination //?
 		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 4 &&
 		   currentPosition.cols[origine].couleur == traitPerso) {
 			int i = 0;
@@ -306,19 +350,41 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 				}
 			}
 			if(currentPosition.cols[voisinDestination.cases[i]].nb != 1) {
+				nb_evaluations++;
 				evaluation = evaluation + 80;
+				printf("p");
 			}
 		}
 
 		// Isole tour alliée
-		if(currentPosition.cols[origine].couleur == traitPerso && voisinDestination.nb - 1 == 0) {
-			evaluation = evaluation + scoreSouhaité; // peut-etre 100 car tour pleine  mais pas forcement de 5;
+		if(voisinDestination.nb - 1 == 0) {
+			nb_evaluations++;
+			evaluation = evaluation + 98; // peut-etre 100 car tour pleine  mais pas forcement de 5; // TODO: déterminer score
+			printf("q");
 		}
 
 		// Tour 5 sur pion adverse	100
 		if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb) == 5 &&
-		   (currentPosition.cols[origine].couleur == traitPerso && currentPosition.cols[destination].couleur != traitPerso)) {
+		   currentPosition.cols[destination].couleur != traitPerso) {
+			nb_evaluations++;
 			evaluation = evaluation + 100;
+			printf("s");
+		}
+
+		// Un bonus en notre faveur est en jeu
+		if(origine == currentPosition.evolution.bonusJ || origine == currentPosition.evolution.bonusR ||
+		   destination == currentPosition.evolution.bonusJ || destination == currentPosition.evolution.bonusR) {
+			nb_evaluations++;
+			evaluation = evaluation + 20;
+			printf("f");
+		}
+
+		// Un malus contre nous est en jeu
+		if(origine == currentPosition.evolution.malusJ || origine == currentPosition.evolution.malusR ||
+		   destination == currentPosition.evolution.malusJ || destination == currentPosition.evolution.malusR) {
+			nb_evaluations++;
+			evaluation = evaluation - 20;
+			printf("g");
 		}
 	}
 
@@ -326,7 +392,9 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb == 3)) {
 		for(int i = 0; i < voisinDestination.nb; i++) {
 			if(currentPosition.cols[voisinDestination.cases[i]].nb == 2 && voisinDestination.cases[i] != origine) {
+				nb_evaluations++;
 				evaluation = evaluation - 90;
+				printf("d");
 				break;
 			}
 		}
@@ -336,7 +404,9 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb == 4)) {
 		for(int i = 0; i < voisinDestination.nb; i++) {
 			if(currentPosition.cols[voisinDestination.cases[i]].nb == 1 && voisinDestination.cases[i] != origine) {
+				nb_evaluations++;
 				evaluation = evaluation - 90;
+				printf("f");
 				break;
 			}
 		}
@@ -359,17 +429,57 @@ float evaluerScoreCoup(T_ListeCoups listeCoups, T_Position currentPosition, int 
 	// 	}
 	// }
 
+	// TODO: ajouter gestion basique des ilots
+	printf(" EC: nb:%d sc:%.0f", nb_evaluations, evaluation);
 	return evaluation;
+}
+
+float evaluerScoreGen(T_Position currentPosition, T_Position emptyPosition, int origine, int destination)
+{
+	copierPlateau(currentPosition, emptyPosition);
+	
+	// On simule le coup qu'on veut évaluer:
+	emptyPosition.cols[destination].nb		= emptyPosition.cols[destination].nb + emptyPosition.cols[origine].nb;
+	emptyPosition.cols[destination].couleur = currentPosition.cols[origine].couleur;
+	emptyPosition.cols[origine].nb			= 0;
+	// On déplace aussi les bonus/malus
+	if(emptyPosition.evolution.bonusJ == origine)
+		emptyPosition.evolution.bonusJ = destination;
+	if(emptyPosition.evolution.malusJ == origine)
+		emptyPosition.evolution.malusJ = destination;
+	if(emptyPosition.evolution.bonusR == origine)
+		emptyPosition.evolution.bonusR = destination;
+	if(emptyPosition.evolution.malusR == origine)
+		emptyPosition.evolution.malusR = destination;
+
+	float scorePlateau =
+		(evaluerScorePlateau(emptyPosition) - evaluerScorePlateau(currentPosition)) * 1; // TODO: Fix
+		// (currentPosition.numCoup / 3); // Score plateau final - initial. (gain net de points) Si positif, avantageux pour nous. On
+									   // tente de corrgier la diminution progressive des scores
+	printf(" | SPD: %.0f | ", scorePlateau);
+	return scorePlateau + evaluerScoreCoup(currentPosition, origine, destination); // TODO: déterminer valeur
 }
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 {
 	printf("\033[0;31m\n"); // On passe la couleur de la sortie interne du bot en rouge pour plus de lisibilité
-	int result;
+	int		   result;
+	float	   max_temp = 0;
+	float	   score_temp;
+	T_Position tempPlateau;
 
 	// Pour le debug: Affiche tous les coups possibles
 	for(int i = 0; i < listeCoups.nb; i++) {
-		printf("o:%d d:%d n:%d | ", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
+		printf("o:%d d:%d n:%d", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
+		score_temp = evaluerScoreGen(currentPosition, tempPlateau, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
+		printf(" | SCG: %.0f", score_temp);
+		if(score_temp > max_temp) {
+			result	 = i;
+			max_temp = score_temp;
+			printf(" (CF)");
+		}
+		printf("\n");
+		// evaluerScoreCoup(currentPosition, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
 	}
 
 	// Gestion des bonus/malus:
@@ -403,7 +513,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	}
 
 	// Partie de jeu
-	result = 0;
+	// result = 0;
 
 	if(result == -1)
 		printf("IMPOSSIBLE DE PLACER LE COUP: -1 (numCoup: %d)\n", currentPosition.numCoup);
