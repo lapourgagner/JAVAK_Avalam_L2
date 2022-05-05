@@ -88,7 +88,7 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 				coup = rechercheCoup(listeCoups, 25, 25);
 			}
 			else {
-				coup = rechercheCoup(listeCoups, 1, 1);
+				coup = rechercheCoup(listeCoups, 22,22);
 			}
 			return coup;
 			break;
