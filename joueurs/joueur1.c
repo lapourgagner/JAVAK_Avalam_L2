@@ -84,7 +84,7 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 					tempo = bonusJaune;
 			}
 			if(tempo == 28) {
-				coup = 22;
+				coup = rechercheCoup(listeCoups, 22, 22);
 			}
 			else if(tempo == 19) {
 				coup = rechercheCoup(listeCoups, 25, 25);
@@ -98,7 +98,6 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 		case 0:; // Bonus jaune
 			if(currentPosition.trait == JAU) {
 				// Technique du cobra ancestral
-
 				coup = rechercheCoup(listeCoups, 19, 19);
 			}
 			return coup;
@@ -131,14 +130,15 @@ int zonesafe(T_Position currentPosition)
 // Effectue les 4 premiers coups pour sécuriser note bonus ou récupérér le bonus adverse selon le trait et l'état du plateau
 int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 {
-	// On vérifie s'il est utile de continuer l'ouverture
-	if(zonesafe(currentPosition) == -1) {
-		printf("Erreur zonesafe == -1 (?)\n");
-		return -1;
-	}
 
 	if(currentPosition.trait == JAU) {
 		// Technique du cobra ancestral
+
+		// On vérifie s'il est utile de continuer l'ouverture
+		if(zonesafe(currentPosition) == -1) {
+			printf("Erreur zonesafe == -1 (?)\n");
+			return -1;
+	}
 
 		if(currentPosition.evolution.bonusJ == 28) {
 			switch(currentPosition.numCoup) {
@@ -165,12 +165,50 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 					break;
 
 				case 6:;
-					return rechercheCoup(listeCoupsSoi, 18, 27);
+					if((currentPosition.cols[19].nb == 1 && currentPosition.cols[27].nb == 1))
+					{
+						return rechercheCoup(listeCoupsSoi, 18, 27);
+					}
+					else if (currentPosition.cols[19].nb == 2 )
+					{
+						return rechercheCoup(listeCoupsSoi, 18 , 19);
+					}
+					else if(currentPosition.cols[27].nb == 2 && currentPosition.cols[27].couleur == JAU)
+					{
+						return rechercheCoup(listeCoupsSoi , 35 , 40);
+					}
+					else if(currentPosition.cols[27].nb == 2 && currentPosition.cols[27].couleur == ROU)
+					{
+						return rechercheCoup(listeCoupsSoi, 18, 27);
+					}
+					else if(currentPosition.cols[18].nb == 3 && currentPosition.cols[27].nb == 0)
+					{
+						if(currentPosition.cols[11].nb != 0)
+						{
+							return rechercheCoup(listeCoupsSoi,18,11);
+						}
+						else
+						{
+							return rechercheCoup(listeCoupsSoi,18,25);
+						}
+						
+					}
+					else
+					{
+						return -1;
+					}
+
+
 					break;
 
 				case 8:;
 					// TODO: C'est un coup inutile, car c'est la seule possibilité de l'ilot, à faire en fin de partie
-					return rechercheCoup(listeCoupsSoi, 27, 19);
+					if(currentPosition.cols[19].nb >= 3 && currentPosition.cols[19].couleur == JAU)
+						return -1;
+					else
+					{
+						return rechercheCoup(listeCoupsSoi, 27, 19);
+					}
 					break;
 				default:
 					break;
@@ -183,14 +221,38 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if(currentPosition.evolution.bonusR == 22) {
 			switch(currentPosition.numCoup) {
 				case 5:;
-					return rechercheCoup(listeCoupsSoi, 22, 29);
+				if ((currentPosition.cols[22].nb == 1 && currentPosition.cols[21].nb == 1))
+				{
+					return rechercheCoup(listeCoupsSoi, 22, 21);
+				}
+				else if((currentPosition.cols[21].nb == 0 && currentPosition.cols[29].nb == 2))
+				{
+					return rechercheCoup(listeCoupsSoi,22,29);
+				}
+				
+					
 					break;
 
 				case 7:;
-					if(currentPosition.cols[21].nb == 1 && currentPosition.cols[20].couleur == ROU &&
-					   estValide(currentPosition, 29, 28) == VRAI)
+					if(currentPosition.evolution.bonusR == 29 && currentPosition.cols[29].nb == 3)
 						return rechercheCoup(listeCoupsSoi, 29, 28);
-					return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
+					else if(currentPosition.evolution.bonusR == 21 && currentPosition.cols[21].nb >= 2 && currentPosition.cols[21].couleur == ROU &&  currentPosition.cols[29].couleur == ROU)
+						return rechercheCoup(listeCoupsSoi, 21, 29);
+					else if(currentPosition.evolution.bonusR == 21 && currentPosition.cols[21].nb >= 2 && currentPosition.cols[28].nb == 0)
+						{
+							if(currentPosition.cols[29].nb == 2 && currentPosition.cols[29].couleur == JAU)
+							{
+								return rechercheCoup(listeCoupsSoi, 36, 29);
+							}
+							else
+							{
+								return rechercheCoup(listeCoupsSoi, 12, 30);
+							}
+						}
+					else
+					{
+						return -1;
+					}
 					break;
 
 				case 9:;
@@ -203,21 +265,42 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		else {
 			switch(currentPosition.numCoup) {
 				case 5:;
-					return rechercheCoup(listeCoupsSoi, 25, 18);
+				if ((currentPosition.cols[25].nb == 1 && currentPosition.cols[26].nb == 1))
+				{
+					return rechercheCoup(listeCoupsSoi, 25, 26);
+				}
+				else if((currentPosition.cols[26].nb == 0 && currentPosition.cols[18].nb == 2))
+				{
+					return rechercheCoup(listeCoupsSoi,25,18);
+				}
+				
+					
 					break;
 
 				case 7:;
-					if(currentPosition.cols[26].nb == 1 && currentPosition.cols[27].couleur == ROU &&
-					   estValide(currentPosition, 18, 19) == VRAI)
+					if(currentPosition.evolution.bonusR == 18 && currentPosition.cols[18].nb == 3)
 						return rechercheCoup(listeCoupsSoi, 18, 19);
-					return rechercheCoup(listeCoupsSoi, 29, 20); // else implicite
+					else if(currentPosition.evolution.bonusR == 26 && currentPosition.cols[26].nb >= 2 && currentPosition.cols[26].couleur == ROU &&  currentPosition.cols[18].couleur == ROU)
+						return rechercheCoup(listeCoupsSoi, 26, 18);
+					else if(currentPosition.evolution.bonusR == 26 && currentPosition.cols[26].nb >= 2 && currentPosition.cols[19].nb == 0)
+						{
+							if(currentPosition.cols[18].nb == 2 && currentPosition.cols[18].couleur == JAU)
+							{
+								return rechercheCoup(listeCoupsSoi, 11, 18);
+							}
+							else
+							{
+								return rechercheCoup(listeCoupsSoi, 35, 27);
+							}
+						}
+					else
+					{
+						return -1;
+					}
 					break;
 
 				case 9:;
-					if(currentPosition.cols[19].nb == 3 && currentPosition.cols[19].couleur == ROU &&
-					   estValide(currentPosition, 26, 35) == VRAI)
-						return rechercheCoup(listeCoupsSoi, 26, 35);
-					return rechercheCoup(listeCoupsSoi, 20, 28); // else implicite
+					return rechercheCoup(listeCoupsSoi, 27, 19);
 					break;
 				default:;
 					break;
