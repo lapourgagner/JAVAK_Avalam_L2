@@ -2,6 +2,7 @@
 #include "../include/avalam.h"
 #include "../include/moteur.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -221,10 +222,10 @@ float evaluerScorePlateau(T_Position currentPosition)
 
 	// Liste des paramètres
 	int score_soi, score_adv, score5_soi, score5_adv;
-	int score_soi_coeff	 = 2;
-	int score_adv_coeff	 = 2;
-	int score5_soi_coeff = 1;
-	int score5_adv_coeff = 1;
+	int score_soi_coeff	 = 1;
+	int score_adv_coeff	 = 1;
+	int score5_soi_coeff = 1000;
+	int score5_adv_coeff = 1000;
 
 	// On évalue le score
 	T_Score score = evaluerScore(currentPosition);
@@ -244,9 +245,9 @@ float evaluerScorePlateau(T_Position currentPosition)
 	// TODO: déterminer coeff
 
 	evaluation =
-	 	score_soi * score_soi_coeff - score_adv * score_adv_coeff + score5_soi * score5_soi_coeff - score5_adv * score5_adv_coeff;
+		score_soi * score_soi_coeff - score_adv * score_adv_coeff + score5_soi * score5_soi_coeff - score5_adv * score5_adv_coeff;
 
-	// printf(" soi:%d, adv:%d ", score_soi, score_adv);
+	printf(" soi:%d, soi5:%d, adv:%d, adv5:%d ", score_soi, score5_soi, score_adv, score5_adv);
 
 	return evaluation;
 }
@@ -440,22 +441,23 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 
 float evaluerScoreGen(T_Position currentPosition, T_Position nextPosition, int origine, int destination)
 {
-	int currentPositionScore = evaluerScorePlateau(currentPosition);
-	int nextPositionScore = evaluerScorePlateau(nextPosition);
-	float scorePlateau = (float) abs(currentPositionScore - nextPositionScore);
+	float currentPositionScore = evaluerScorePlateau(currentPosition);
+	float nextPositionScore	   = evaluerScorePlateau(nextPosition);
+	float scorePlateau		   = fabs(currentPositionScore - nextPositionScore);
 	// if (currentPositionScore > nextPositionScore) // Coup avantageux // Le score de score plateu est déjà positif
 	// {
-		
+
 	// }
-	if (currentPositionScore < nextPositionScore) { // Coup désavantageux // On le multiplie par -1 car on veut décourager ce coup
+	if(currentPositionScore > nextPositionScore) { // Coup désavantageux // On le multiplie par -1 car on veut décourager ce coup
 		scorePlateau = -1 * scorePlateau;
 	}
-	
+
 	// On le ramène au num coup
 	// scorePlateau = scorePlateau + 2* currentPosition.numCoup;
 
 	// float scorePlateau = (evaluerScorePlateau(emptyPosition) - evaluerScorePlateau(currentPosition)) * 1; // TODO: Fix
-	// // (currentPosition.numCoup / 3); // Score plateau final - initial. (gain net de points) Si positif, avantageux pour nous. On
+	// // (currentPosition.numCoup / 3); // Score plateau final - initial. (gain net de points) Si positif, avantageux pour nous.
+	// On
 	// // tente de corrgier la diminution progressive des scores
 	// printf(" SP1:%.0f SP2:%.0f", evaluerScorePlateau(currentPosition), evaluerScorePlateau(emptyPosition));
 	printf(" | SPD: %.0f | ", scorePlateau);
@@ -473,6 +475,12 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	// Pour le debug: Affiche tous les coups possibles
 	for(int i = 0; i < listeCoups.nb; i++) {
 		tempPlateau = jouerCoup(currentPosition, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
+		// On inverse le trait pour comparer les même résultats
+		if(tempPlateau.trait == JAU)
+			tempPlateau.trait = ROU;
+		else
+			tempPlateau.trait = JAU;
+
 		printf("o:%d d:%d n:%d", listeCoups.coups[i].origine, listeCoups.coups[i].destination, i);
 		score_temp = evaluerScoreGen(currentPosition, tempPlateau, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
 		printf(" | SCG: %.0f", score_temp);
