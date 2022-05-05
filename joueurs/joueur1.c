@@ -10,7 +10,7 @@ void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
 {
 	currentPositionCopy.trait	= currentPosition.trait;
 	currentPositionCopy.numCoup = currentPosition.numCoup;
-	for(int i = 0; i < NBCASES; i++)
+	for(int i = 0; i < NBCASES; i++) // TODO: Fix the copy, will maybe fix SPD
 		currentPositionCopy.cols[i] = currentPosition.cols[i];
 	currentPositionCopy.evolution.bonusJ = currentPosition.evolution.bonusJ;
 	currentPositionCopy.evolution.bonusR = currentPosition.evolution.bonusR;
