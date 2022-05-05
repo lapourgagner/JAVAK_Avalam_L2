@@ -6,22 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Utile pour simuler un coup
-// void copierPlateau(T_Position currentPosition, T_Position currentPositionCopy)
-// {
-// 	currentPositionCopy.trait	= currentPosition.trait;
-// 	currentPositionCopy.numCoup = currentPosition.numCoup;
-// 	for(int i = 0; i < NBCASES; i++) { // TODO: Fix the copy, will maybe fix SPD
-// 		currentPositionCopy.cols[i].nb		= currentPosition.cols[i].nb;
-// 		currentPositionCopy.cols[i].couleur = currentPosition.cols[i].couleur;
-// 	}
-// 	currentPositionCopy.evolution.bonusJ = currentPosition.evolution.bonusJ;
-// 	currentPositionCopy.evolution.bonusR = currentPosition.evolution.bonusR;
-// 	currentPositionCopy.evolution.malusJ = currentPosition.evolution.malusJ;
-// 	currentPositionCopy.evolution.malusR = currentPosition.evolution.malusR;
-// 	return;
-// }
-
 // Recher l'index d'un coup avec un case origine et une case destiantion donnée
 int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 {
@@ -34,22 +18,23 @@ int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 		if(listeCoups.coups[moy].origine == 0 && moy != 0) {
 			size = moy - 1;
 		}
-		else if(listeCoups.coups[moy].origine == origine) { //If origine in tab = origine wanted
-			if(listeCoups.coups[moy].destination > destination) { //If the value of destination in tab > destination wanted
+		else if(listeCoups.coups[moy].origine == origine) {		  // If origine in tab = origine wanted
+			if(listeCoups.coups[moy].destination > destination) { // If the value of destination in tab > destination wanted
 				while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination > destination)
-					moy--; //We go up the array to find the right destination (because the array is in sort ascending)
+					moy--; // We go up the array to find the right destination (because the array is in sort ascending)
 			}
-			else if(listeCoups.coups[moy].destination < destination) { //If the value of destination in array < destination wanted
+			else if(listeCoups.coups[moy].destination < destination) { // If the value of destination in array < destination
+																	   // wanted
 				while(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination < destination)
-					moy++; //We go down the array to find the right destinaion
+					moy++; // We go down the array to find the right destinaion
 			}
 			if(listeCoups.coups[moy].origine == origine && listeCoups.coups[moy].destination == destination) {
-				//If the origine and destination are the one wanted
-				return moy; //We return the index of the cell in the table
+				// If the origine and destination are the one wanted
+				return moy; // We return the index of the cell in the table
 			}
-			return -1; //Else return -1
+			return -1; // Else return -1
 		}
-		//Dichotomous search
+		// Dichotomous search
 		else if(listeCoups.coups[moy].origine < origine) {
 			debut = moy + 1;
 		}
@@ -59,7 +44,6 @@ int rechercheCoup(T_ListeCoups listeCoups, octet origine, octet destination)
 	}
 	return -1;
 }
-
 
 // Placer les Bonus selon l'état du plateau actuel
 int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
@@ -90,7 +74,7 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 				coup = rechercheCoup(listeCoups, 25, 25);
 			}
 			else {
-				coup = rechercheCoup(listeCoups, 22,22);
+				coup = rechercheCoup(listeCoups, 22, 22);
 			}
 			return coup;
 			break;
@@ -109,20 +93,18 @@ int placerBonus(T_Position currentPosition, T_ListeCoups listeCoups)
 	}
 }
 
-// Vérifie que les bonus sont sécurisés ainsi interrompre l'ouverture pour jouer avec évaluerCoupScore 
+// Vérifie que les bonus sont sécurisés ainsi interrompre l'ouverture pour jouer avec évaluerCoupScore
 int zonesafe(T_Position currentPosition)
 {
 	octet bonusJaune = currentPosition.evolution.bonusJ;
-	if (currentPosition.trait == JAU)
-	{
+	if(currentPosition.trait == JAU) {
 		if(currentPosition.cols[bonusJaune].couleur == ROU && currentPosition.trait == JAU)
 			return -1;
 		else if(bonusJaune != 28 && bonusJaune != 20 && bonusJaune != 19 && bonusJaune != 27 && currentPosition.trait == JAU)
 			return -1;
 		return 1;
 	}
-	else
-	{
+	else {
 		return 1;
 	}
 }
@@ -130,7 +112,6 @@ int zonesafe(T_Position currentPosition)
 // Effectue les 4 premiers coups pour sécuriser note bonus ou récupérér le bonus adverse selon le trait et l'état du plateau
 int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 {
-
 	if(currentPosition.trait == JAU) {
 		// Technique du cobra ancestral
 
@@ -138,7 +119,7 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if(zonesafe(currentPosition) == -1) {
 			printf("Erreur zonesafe == -1 (?)\n");
 			return -1;
-	}
+		}
 
 		if(currentPosition.evolution.bonusJ == 28) {
 			switch(currentPosition.numCoup) {
@@ -165,39 +146,29 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 					break;
 
 				case 6:;
-					if((currentPosition.cols[19].nb == 1 && currentPosition.cols[27].nb == 1))
-					{
+					if((currentPosition.cols[19].nb == 1 && currentPosition.cols[27].nb == 1)) {
 						return rechercheCoup(listeCoupsSoi, 18, 27);
 					}
-					else if (currentPosition.cols[19].nb == 2 )
-					{
-						return rechercheCoup(listeCoupsSoi, 18 , 19);
+					else if(currentPosition.cols[19].nb == 2) {
+						return rechercheCoup(listeCoupsSoi, 18, 19);
 					}
-					else if(currentPosition.cols[27].nb == 2 && currentPosition.cols[27].couleur == JAU)
-					{
-						return rechercheCoup(listeCoupsSoi , 35 , 40);
+					else if(currentPosition.cols[27].nb == 2 && currentPosition.cols[27].couleur == JAU) {
+						return rechercheCoup(listeCoupsSoi, 35, 40);
 					}
-					else if(currentPosition.cols[27].nb == 2 && currentPosition.cols[27].couleur == ROU)
-					{
+					else if(currentPosition.cols[27].nb == 2 && currentPosition.cols[27].couleur == ROU) {
 						return rechercheCoup(listeCoupsSoi, 18, 27);
 					}
-					else if(currentPosition.cols[18].nb == 3 && currentPosition.cols[27].nb == 0)
-					{
-						if(currentPosition.cols[11].nb != 0)
-						{
-							return rechercheCoup(listeCoupsSoi,18,11);
+					else if(currentPosition.cols[18].nb == 3 && currentPosition.cols[27].nb == 0) {
+						if(currentPosition.cols[11].nb != 0) {
+							return rechercheCoup(listeCoupsSoi, 18, 11);
 						}
-						else
-						{
-							return rechercheCoup(listeCoupsSoi,18,25);
+						else {
+							return rechercheCoup(listeCoupsSoi, 18, 25);
 						}
-						
 					}
-					else
-					{
+					else {
 						return -1;
 					}
-
 
 					break;
 
@@ -205,8 +176,7 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 					// TODO: C'est un coup inutile, car c'est la seule possibilité de l'ilot, à faire en fin de partie
 					if(currentPosition.cols[19].nb >= 3 && currentPosition.cols[19].couleur == JAU)
 						return -1;
-					else
-					{
+					else {
 						return rechercheCoup(listeCoupsSoi, 27, 19);
 					}
 					break;
@@ -221,36 +191,31 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		if(currentPosition.evolution.bonusR == 22) {
 			switch(currentPosition.numCoup) {
 				case 5:;
-				if ((currentPosition.cols[22].nb == 1 && currentPosition.cols[21].nb == 1))
-				{
-					return rechercheCoup(listeCoupsSoi, 22, 21);
-				}
-				else if((currentPosition.cols[21].nb == 0 && currentPosition.cols[29].nb == 2))
-				{
-					return rechercheCoup(listeCoupsSoi,22,29);
-				}
-				
-					
+					if((currentPosition.cols[22].nb == 1 && currentPosition.cols[21].nb == 1)) {
+						return rechercheCoup(listeCoupsSoi, 22, 21);
+					}
+					else if((currentPosition.cols[21].nb == 0 && currentPosition.cols[29].nb == 2)) {
+						return rechercheCoup(listeCoupsSoi, 22, 29);
+					}
+
 					break;
 
 				case 7:;
 					if(currentPosition.evolution.bonusR == 29 && currentPosition.cols[29].nb == 3)
 						return rechercheCoup(listeCoupsSoi, 29, 28);
-					else if(currentPosition.evolution.bonusR == 21 && currentPosition.cols[21].nb >= 2 && currentPosition.cols[21].couleur == ROU &&  currentPosition.cols[29].couleur == ROU)
+					else if(currentPosition.evolution.bonusR == 21 && currentPosition.cols[21].nb >= 2 &&
+							currentPosition.cols[21].couleur == ROU && currentPosition.cols[29].couleur == ROU)
 						return rechercheCoup(listeCoupsSoi, 21, 29);
-					else if(currentPosition.evolution.bonusR == 21 && currentPosition.cols[21].nb >= 2 && currentPosition.cols[28].nb == 0)
-						{
-							if(currentPosition.cols[29].nb == 2 && currentPosition.cols[29].couleur == JAU)
-							{
-								return rechercheCoup(listeCoupsSoi, 36, 29);
-							}
-							else
-							{
-								return rechercheCoup(listeCoupsSoi, 12, 30);
-							}
+					else if(currentPosition.evolution.bonusR == 21 && currentPosition.cols[21].nb >= 2 &&
+							currentPosition.cols[28].nb == 0) {
+						if(currentPosition.cols[29].nb == 2 && currentPosition.cols[29].couleur == JAU) {
+							return rechercheCoup(listeCoupsSoi, 36, 29);
 						}
-					else
-					{
+						else {
+							return rechercheCoup(listeCoupsSoi, 12, 30);
+						}
+					}
+					else {
 						return -1;
 					}
 					break;
@@ -265,36 +230,31 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 		else {
 			switch(currentPosition.numCoup) {
 				case 5:;
-				if ((currentPosition.cols[25].nb == 1 && currentPosition.cols[26].nb == 1))
-				{
-					return rechercheCoup(listeCoupsSoi, 25, 26);
-				}
-				else if((currentPosition.cols[26].nb == 0 && currentPosition.cols[18].nb == 2))
-				{
-					return rechercheCoup(listeCoupsSoi,25,18);
-				}
-				
-					
+					if((currentPosition.cols[25].nb == 1 && currentPosition.cols[26].nb == 1)) {
+						return rechercheCoup(listeCoupsSoi, 25, 26);
+					}
+					else if((currentPosition.cols[26].nb == 0 && currentPosition.cols[18].nb == 2)) {
+						return rechercheCoup(listeCoupsSoi, 25, 18);
+					}
+
 					break;
 
 				case 7:;
 					if(currentPosition.evolution.bonusR == 18 && currentPosition.cols[18].nb == 3)
 						return rechercheCoup(listeCoupsSoi, 18, 19);
-					else if(currentPosition.evolution.bonusR == 26 && currentPosition.cols[26].nb >= 2 && currentPosition.cols[26].couleur == ROU &&  currentPosition.cols[18].couleur == ROU)
+					else if(currentPosition.evolution.bonusR == 26 && currentPosition.cols[26].nb >= 2 &&
+							currentPosition.cols[26].couleur == ROU && currentPosition.cols[18].couleur == ROU)
 						return rechercheCoup(listeCoupsSoi, 26, 18);
-					else if(currentPosition.evolution.bonusR == 26 && currentPosition.cols[26].nb >= 2 && currentPosition.cols[19].nb == 0)
-						{
-							if(currentPosition.cols[18].nb == 2 && currentPosition.cols[18].couleur == JAU)
-							{
-								return rechercheCoup(listeCoupsSoi, 11, 18);
-							}
-							else
-							{
-								return rechercheCoup(listeCoupsSoi, 35, 27);
-							}
+					else if(currentPosition.evolution.bonusR == 26 && currentPosition.cols[26].nb >= 2 &&
+							currentPosition.cols[19].nb == 0) {
+						if(currentPosition.cols[18].nb == 2 && currentPosition.cols[18].couleur == JAU) {
+							return rechercheCoup(listeCoupsSoi, 11, 18);
 						}
-					else
-					{
+						else {
+							return rechercheCoup(listeCoupsSoi, 35, 27);
+						}
+					}
+					else {
 						return -1;
 					}
 					break;
@@ -313,7 +273,6 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 // Valeur du plateau relativement à l'adversaire (le plus grand est le mieux), possiblement négatif -> avantage à l'adversaire
 float evaluerScorePlateau(T_Position currentPosition)
 {
-	// TODO: SPD bugger a corriger; il est toujours positif
 	float evaluation = 0;
 
 	// Liste des paramètres
@@ -541,23 +500,13 @@ float evaluerScoreGen(T_Position currentPosition, T_Position nextPosition, int o
 	float nextPositionScore	   = evaluerScorePlateau(nextPosition);
 	float scorePlateau		   = fabs(currentPositionScore - nextPositionScore);
 	// if (currentPositionScore > nextPositionScore) // Coup avantageux // Le score de score plateu est déjà positif
-	// {
 
-	// }
 	if(currentPositionScore > nextPositionScore) { // Coup désavantageux // On le multiplie par -1 car on veut décourager ce coup
 		scorePlateau = -1 * scorePlateau;
 	}
 
-	// On le ramène au num coup
-	// scorePlateau = scorePlateau + 2* currentPosition.numCoup;
-
-	// float scorePlateau = (evaluerScorePlateau(emptyPosition) - evaluerScorePlateau(currentPosition)) * 1; // TODO: Fix
-	// // (currentPosition.numCoup / 3); // Score plateau final - initial. (gain net de points) Si positif, avantageux pour nous.
-	// On
-	// // tente de corrgier la diminution progressive des scores
-	// printf(" SP1:%.0f SP2:%.0f", evaluerScorePlateau(currentPosition), evaluerScorePlateau(emptyPosition));
-	printf(" | SPD: %.0f | ", scorePlateau);
-	return scorePlateau + evaluerScoreCoup(currentPosition, origine, destination); // TODO: déterminer valeur
+	printf("| SPD: %.0f | ", scorePlateau);
+	return scorePlateau + evaluerScoreCoup(currentPosition, origine, destination);
 }
 
 void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
