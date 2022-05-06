@@ -302,7 +302,7 @@ float evaluerScorePlateau(T_Position currentPosition)
 	evaluation =
 		score_soi * score_soi_coeff - score_adv * score_adv_coeff + score5_soi * score5_soi_coeff - score5_adv * score5_adv_coeff;
 
-	printf(" soi:%d, soi5:%d, adv:%d, adv5:%d ", score_soi, score5_soi, score_adv, score5_adv);
+	// printf(" soi:%d, soi5:%d, adv:%d, adv5:%d ", score_soi, score5_soi, score_adv, score5_adv);
 
 	return evaluation;
 }
@@ -357,7 +357,7 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 		if(origine == currentPosition.evolution.bonusJ || origine == currentPosition.evolution.bonusR ||
 		   destination == currentPosition.evolution.bonusJ || destination == currentPosition.evolution.bonusR) {
 			nb_evaluations++;
-			evaluation = evaluation - 20;
+			evaluation = evaluation - 70;
 			printf("f");
 		}
 
@@ -365,7 +365,7 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 		if(origine == currentPosition.evolution.malusJ || origine == currentPosition.evolution.malusR ||
 		   destination == currentPosition.evolution.malusJ || destination == currentPosition.evolution.malusR) {
 			nb_evaluations++;
-			evaluation = evaluation + 20;
+			evaluation = 0;
 			printf("g");
 		}
 	}
@@ -417,9 +417,9 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 		}
 
 		// Isole tour alliée
-		if(voisinDestination.nb - 1 == 0) {
+		if(voisinDestination.nb - 1 == 0 && currentPosition.cols[voisinDestination.cases[0]].couleur != traitPerso) {
 			nb_evaluations++;
-			evaluation = evaluation + 98; // peut-etre 100 car tour pleine  mais pas forcement de 5; // TODO: déterminer score
+			evaluation = evaluation + 110; // peut-etre 100 car tour pleine  mais pas forcement de 5; // TODO: déterminer score
 			printf("q");
 		}
 
@@ -435,7 +435,7 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 		if(origine == currentPosition.evolution.bonusJ || origine == currentPosition.evolution.bonusR ||
 		   destination == currentPosition.evolution.bonusJ || destination == currentPosition.evolution.bonusR) {
 			nb_evaluations++;
-			evaluation = evaluation + 75;
+			evaluation = evaluation + 95;
 			printf("f");
 		}
 
@@ -443,7 +443,7 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 		if(origine == currentPosition.evolution.malusJ || origine == currentPosition.evolution.malusR ||
 		   destination == currentPosition.evolution.malusJ || destination == currentPosition.evolution.malusR) {
 			nb_evaluations++;
-			evaluation = evaluation - 75;
+			evaluation = 0;
 			printf("g");
 		}
 	}
@@ -451,10 +451,24 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 	// Tour de 3 si tour de 2 à côté de destination	-90
 	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb == 3)) {
 		for(int i = 0; i < voisinDestination.nb; i++) {
-			if(currentPosition.cols[voisinDestination.cases[i]].nb == 2 && voisinDestination.cases[i] != origine) {
+			if(currentPosition.cols[voisinDestination.cases[i]].nb == 2 && voisinDestination.cases[i] != origine &&
+			   currentPosition.cols[voisinDestination.cases[i]].couleur != currentPosition.trait) {
 				nb_evaluations++;
-				evaluation = evaluation - 90;
+				evaluation = evaluation - 105;
 				printf("d");
+				break;
+			}
+		}
+	}
+
+	// Tour de 2 si tour de 3 à côté de destination	-90
+	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb == 2)) {
+		for(int i = 0; i < voisinDestination.nb; i++) {
+			if(currentPosition.cols[voisinDestination.cases[i]].nb == 3 && voisinDestination.cases[i] != origine &&
+			   currentPosition.cols[voisinDestination.cases[i]].couleur != currentPosition.trait) {
+				nb_evaluations++;
+				evaluation = evaluation - 105;
+				printf("h");
 				break;
 			}
 		}
@@ -463,9 +477,10 @@ float evaluerScoreCoup(T_Position currentPosition, int origine, int destination)
 	// Tour de 4 si tour de 1 à côté de destination	-90
 	if((currentPosition.cols[origine].nb + currentPosition.cols[destination].nb == 4)) {
 		for(int i = 0; i < voisinDestination.nb; i++) {
-			if(currentPosition.cols[voisinDestination.cases[i]].nb == 1 && voisinDestination.cases[i] != origine) {
+			if(currentPosition.cols[voisinDestination.cases[i]].nb == 1 && voisinDestination.cases[i] != origine &&
+			   currentPosition.cols[voisinDestination.cases[i]].couleur != currentPosition.trait) {
 				nb_evaluations++;
-				evaluation = evaluation - 90;
+				evaluation = evaluation - 105;
 				printf("f");
 				break;
 			}
@@ -517,6 +532,35 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 	float	   score_temp;
 	T_Position tempPlateau;
 
+	// Gestion des bonus/malus:
+	if(4 > currentPosition.numCoup) // (bj, br, mj, mr)
+	{
+		result = placerBonus(currentPosition, listeCoups);
+
+		if(result != -1) {
+			printf("On place le le bonus, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
+				   listeCoups.coups[result].destination);
+			ecrireIndexCoup(result);
+			printf("\033[0m\n");
+			return; // C'est la fin du programme pour cette action, évite un else pour les ouvertures
+		}
+		printf("IMPOSSIBLE DE PLACER LE BONUS/MALUS: -1 (numCoup: %d)\n", currentPosition.numCoup);
+	}
+
+	// Gestion des ouvertures
+	if(currentPosition.numCoup < 10) // Valeur de fin des ouvertures à déterminer
+	{
+		result = ouverture(currentPosition, listeCoups);
+		if(result != -1) {
+			printf("On place une ouverture, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
+				   listeCoups.coups[result].destination);
+			ecrireIndexCoup(result);
+			printf("\033[0m\n");
+			return; // C'est la fin du programme pour cette action, évite un else pour la partie jeu
+		}
+		printf("IMPOSSIBLE DE PLACER L'OUVERTURE: -1 (numCoup: %d)\n", currentPosition.numCoup);
+	}
+
 	// Pour le debug: Affiche tous les coups possibles
 	for(int i = 0; i < listeCoups.nb; i++) {
 		tempPlateau = jouerCoup(currentPosition, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
@@ -530,6 +574,7 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 		score_temp = evaluerScoreGen(currentPosition, tempPlateau, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
 		printf(" | SCG: %.0f", score_temp);
 		if(score_temp > max_temp) {
+			ecrireIndexCoup(result);
 			result	 = i;
 			max_temp = score_temp;
 			printf(" (CF)");
@@ -538,48 +583,11 @@ void choisirCoup(T_Position currentPosition, T_ListeCoups listeCoups)
 		// evaluerScoreCoup(currentPosition, listeCoups.coups[i].origine, listeCoups.coups[i].destination);
 	}
 
-	// Gestion des bonus/malus:
-	if(4 > currentPosition.numCoup) // (bj, br, mj, mr)
-	{
-		result = placerBonus(currentPosition, listeCoups);
-
-		if(result == -1)
-			printf("IMPOSSIBLE DE PLACER LE BONUS/MALUS: -1 (numCoup: %d)\n", currentPosition.numCoup);
-		printf("On place le le bonus, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
-			   listeCoups.coups[result].destination);
-		ecrireIndexCoup(result);
-		printf("\033[0m\n");
-		return; // C'est la fin du programme pour cette action, évite un else pour les ouvertures
-	}
-
-	// Gestion des ouvertures
-	if(currentPosition.numCoup < 10) // Valeur de fin des ouvertures à déterminer
-	{
-		result = ouverture(currentPosition, listeCoups);
-		if(result == -1)
-			printf("IMPOSSIBLE DE PLACER L'OUVERTURE: -1 (numCoup: %d)\n", currentPosition.numCoup);
-		printf("On place une ouverture, coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
-			   listeCoups.coups[result].destination);
-		ecrireIndexCoup(result);
-		if(result != -1) {
-			printf("\033[0m\n");
-			return; // C'est la fin du programme pour cette action, évite un else pour la partie jeu
-		}
-		printf("Coup non satisfaisant, situation possiblement problématique; tentative de placememnt de coup classique");
-	}
-
-	// Partie de jeu
-	// result = 0;
-
 	if(result == -1)
 		printf("IMPOSSIBLE DE PLACER LE COUP: -1 (numCoup: %d)\n", currentPosition.numCoup);
 	printf("On place le le coup %d (o:%d, d:%d)\n", result, listeCoups.coups[result].origine,
 		   listeCoups.coups[result].destination);
 	ecrireIndexCoup(result);
-
-	printf("Etat des bonus/malus: bj: %d, mj: %d, br: %d, mr:%d. Trait: %d\n", currentPosition.evolution.bonusJ,
-		   currentPosition.evolution.malusJ, currentPosition.evolution.bonusR, currentPosition.evolution.malusR,
-		   currentPosition.trait);
 
 	printf("\033[0m\n"); // On repasse en police par déaut pour les messages de gestion
 	return;
