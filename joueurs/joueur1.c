@@ -102,6 +102,8 @@ int zonesafe(T_Position currentPosition)
 			return -1;
 		else if(bonusJaune != 28 && bonusJaune != 20 && bonusJaune != 19 && bonusJaune != 27 && currentPosition.trait == JAU)
 			return -1;
+		else if(currentPosition.cols[18].couleur == ROU)
+			return -1;
 		return 1;
 	}
 	else {
