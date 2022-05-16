@@ -102,7 +102,7 @@ int zonesafe(T_Position currentPosition)
 			return -1;
 		else if(bonusJaune != 28 && bonusJaune != 20 && bonusJaune != 19 && bonusJaune != 27 && currentPosition.trait == JAU)
 			return -1;
-		else if(currentPosition.cols[18].couleur == ROU)
+		else if(currentPosition.cols[18].couleur == ROU && currentPosition.cols[27].nb == 1 && currentPosition.cols[18].nb == 3)
 			return -1;
 		return 1;
 	}
@@ -150,6 +150,16 @@ int ouverture(T_Position currentPosition, T_ListeCoups listeCoupsSoi)
 				case 6:;
 					if((currentPosition.cols[19].nb == 1 && currentPosition.cols[27].nb == 1)) {
 						return rechercheCoup(listeCoupsSoi, 18, 27);
+					}
+					else if(currentPosition.cols[18].couleur == ROU && currentPosition.cols[27].nb == 0 && currentPosition.cols[18].nb == 3){
+						if (currentPosition.evolution.bonusR == 11)
+						{
+							return rechercheCoup(listeCoupsSoi, 18, 25);
+						}
+						else
+						{
+							return rechercheCoup(listeCoupsSoi, 18, 11);
+						}
 					}
 					else if(currentPosition.cols[19].nb == 2) {
 						return rechercheCoup(listeCoupsSoi, 18, 19);
